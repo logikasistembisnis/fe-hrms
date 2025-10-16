@@ -14,8 +14,8 @@ export default function Home() {
 
     return (
         <main className="min-h-screen flex flex-col bg-[#f9fbff]">
-            <section className="flex-1 px-10 py-10">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
+            <section className="flex-1 py-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-10 gap-y-8">
                     {menus.map((menu) => (
                         <CardMenu key={menu.title} {...menu} />
                     ))}
