@@ -1,40 +1,49 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 export function Header() {
-  const [active, setActive] = useState("Employee Self-Service");
+  const router = useRouter();
+  const pathname = usePathname();
 
   const menuItems = [
-    "Home",
-    "Organization Design",
-    "Employee Self-Service",
-    "Recruitment & Selection",
-    "Learning Management",
-    "Performance Management",
-    "Career Management",
-    "Total Rewards",
-    "Industrial Relationship",
+    { label: "Home", path: "/" },
+    { label: "Organization Design", path: "/organization-design" },
+    { label: "Employee Self-Service", path: "/employee-self-service" },
+    { label: "Recruitment & Selection", path: "/recruitment-selection" },
+    { label: "Learning Management", path: "/learning-management" },
+    { label: "Performance Management", path: "/performance-management" },
+    { label: "Career Management", path: "/career-management" },
+    { label: "Total Rewards", path: "/total-rewards" },
+    { label: "Industrial Relationship", path: "/industrial-relationship" },
   ];
+
+  const isActive = (path: string) => pathname === path;
 
   return (
     <header className="bg-[#eef8ff] px-8 py-3 flex items-center justify-between shadow-sm">
       {/* Navigation */}
       <nav className="flex gap-6 text-sm">
         {/* Logo */}
-      <Image src="/logo2.png" alt="People Partner Logo" width={100} height={100} />
+        <Image
+          src="/logo2.png"
+          alt="People Partner Logo"
+          width={100}
+          height={100}
+          className="cursor-pointer"
+          onClick={() => router.push("/")}
+        />
         {menuItems.map((item) => (
           <button
-            key={item}
-            onClick={() => setActive(item)}
-            className={`transition-colors ${
-              active === item
+            key={item.label}
+            onClick={() => router.push(item.path)}
+            className={`transition-colors ${isActive(item.path)
                 ? "font-semibold text-black"
                 : "text-[#56A0FF] hover:text-black"
-            }`}
+              }`}
           >
-            {item}
+            {item.label}
           </button>
         ))}
       </nav>
