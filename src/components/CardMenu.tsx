@@ -9,7 +9,7 @@ interface CardMenuProps {
 
 export function CardMenu({ title, imageSrc }: CardMenuProps) {
     return (
-        <div className="bg-[#eef8ff] rounded-2xl shadow-md p-4 flex flex-col items-center hover:shadow-lg transition duration-300">
+        <div className="bg-[#eef8ff] rounded-2xl shadow-md p-5 flex flex-col items-center hover:shadow-lg transition duration-300">
             <div className="relative w-full h-40 rounded-lg overflow-hidden">
                 <Image
                     src={imageSrc}
