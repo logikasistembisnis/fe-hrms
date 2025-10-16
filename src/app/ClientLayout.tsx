@@ -3,6 +3,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function ClientLayout({
     children,
@@ -12,12 +13,22 @@ export default function ClientLayout({
 
     // Get the current pathname
     const pathname = usePathname();
+    // State to track if the component is mounted
+    const [isClient, setIsClient] = useState(false);
 
-    // Is the current page the sign-up page?
-    const isSignUpPage = pathname === "/sign-up";
+    // Effect to check if the component is mounted
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    // Check if the current page is the sign-up page
+    const isSignUpPage = isClient ? pathname === "/sign-up" : false;
+
 
     return (
-        <div className="min-h-screen bg-white px-8 py-4 flex flex-col">
+        <div className={`min-h-screen flex flex-col bg-white ${isSignUpPage ? "" : "px-8 py-4"
+            }`}
+        >
             {/* Render the header if not on the sign-up page */}
             {!isSignUpPage && <Header />}
 
