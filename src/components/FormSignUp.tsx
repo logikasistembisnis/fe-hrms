@@ -12,7 +12,7 @@ export default function FormSignUp() {
   // Handle form submission
   const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent page reload on form submit
-    router.push("/information"); // Navigate to the /information page
+    router.push("/home"); // Navigate to the /home page
   };
 
   return (
