@@ -76,7 +76,7 @@ export default function EmployeeSelfServicePage() {
                 {/* Start Button */}
                 <div className="flex justify-center">
                     <button 
-                    onClick={() => router.push("/employee-self-service/information")}
+                    onClick={() => router.push("/employee-self-service/personal-information")}
                     className="flex items-center gap-3 text-3xl font-bold text-white cursor-pointer">
                         <div className="flex items-center justify-center w-8 h-8 rounded-full border border-white">
                             <Play className="w-4 h-4 text-white fill-white" />
