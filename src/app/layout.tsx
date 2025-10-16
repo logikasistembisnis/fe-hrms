@@ -15,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-white flex flex-col">
+        {/* Render the client layout */}
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
