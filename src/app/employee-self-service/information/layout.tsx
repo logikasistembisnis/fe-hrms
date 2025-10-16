@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import "../globals.css";
+import "@/app/globals.css";
 import { Sidebar } from "@/components/Sidebar";
 
 export default function LayoutInformation({
