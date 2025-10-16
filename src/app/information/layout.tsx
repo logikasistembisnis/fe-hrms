@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import "../globals.css";
-import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
-import { Footer } from "@/components/Footer";
 
 export default function LayoutInformation({
   children,
@@ -12,15 +10,11 @@ export default function LayoutInformation({
   children: React.ReactNode;
 }) {
   
+  // State to control the sidebar
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <div className="min-h-screen flex flex-col p-4 bg-white">
-      {/* HEADER */}
-      <div className="mb-4">
-        <Header />
-      </div>
-
+    <div className="min-h-screen flex py-4 bg-white">
       {/* SIDEBAR + CONTENT */}
       <div className="flex flex-1 relative transition-all duration-300">
         {/* SIDEBAR */}
@@ -62,11 +56,6 @@ export default function LayoutInformation({
         >
           {children}
         </main>
-      </div>
-
-      {/* FOOTER */}
-      <div className="mt-1">
-        <Footer />
       </div>
     </div>
   );
