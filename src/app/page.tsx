@@ -1,39 +1,26 @@
-import Image from "next/image";
-import FormSignUp from "@/components/FormSignUp";
+import { CardMenu } from "@/components/CardMenu";
 
 export default function Home() {
-  return (
-    <main className="flex flex-col md:flex-row min-h-screen bg-black">
-      {/* Left Content */}
-      <div className="flex flex-col justify-center items-start w-full md:w-1/2 px-8 md:px-16 py-12 space-y-3">
-        {/* Logo */}
-        <div className="flex items-center space-x-3">
-          <Image src="/logo.png" height={100} width={100} alt="logo" className="w-40 h-auto"/>
-        </div>
+    const menus = [
+        { title: "Organization Design", imageSrc: "/menu/org-design.jpg" },
+        { title: "Learning Management", imageSrc: "/menu/learning.jpg" },
+        { title: "Performance Management", imageSrc: "/menu/performance.png" },
+        { title: "Career Management", imageSrc: "/menu/career.jpg" },
+        { title: "Employee Self-Service", imageSrc: "/menu/self-service.jpg" },
+        { title: "Recruitment & Selection", imageSrc: "/menu/recruitment.jpg" },
+        { title: "Total Rewards", imageSrc: "/menu/rewards.jpg" },
+        { title: "Industrial Relationship", imageSrc: "/menu/industrial.png" },
+    ];
 
-        {/* Title */}
-        <h2 className="text-4xl font-bold text-white">
-          PEOPLE PARTNER SYSTEM
-        </h2>
-
-        {/* Description */}
-        <p className="text-white leading-relaxed text-justify text-lg italic">
-          We believe that you as part of our family is the most important people
-          to be managed and taken care of, allowing us to give you great people
-          experience.
-        </p>
-
-        {/* Form sign up */}
-        <FormSignUp />
-      </div>
-
-      {/* Right Content */}
-      <div
-        className="hidden md:block w-1/2 bg-cover bg-center relative"
-        style={{ backgroundImage: "url('/right-panel.png')" }}
-      >
-        <div className="absolute inset-0 bg-black/40" />
-      </div>
-    </main>
-  );
+    return (
+        <main className="min-h-screen flex flex-col bg-[#f9fbff]">
+            <section className="flex-1 px-10 py-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
+                    {menus.map((menu) => (
+                        <CardMenu key={menu.title} {...menu} />
+                    ))}
+                </div>
+            </section>
+        </main>
+    )
 }
