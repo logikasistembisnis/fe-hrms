@@ -30,7 +30,7 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-[#F5FAFF] p-4">
+    <aside className="w-64 bg-[#eef8ff] p-4">
       {/* Employee Self-Service Section */}
       <div className="mb-6">
         <h2 className="font-bold text-black mb-2">Employee Self-Service</h2>

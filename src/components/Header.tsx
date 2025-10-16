@@ -19,7 +19,7 @@ export function Header() {
   ];
 
   return (
-    <header className="bg-[#f5faff] px-8 py-3 flex items-center justify-between shadow-sm">
+    <header className="bg-[#eef8ff] px-8 py-3 flex items-center justify-between shadow-sm">
       {/* Navigation */}
       <nav className="flex gap-6 text-sm">
         {/* Logo */}
