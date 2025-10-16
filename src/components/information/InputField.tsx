@@ -10,7 +10,7 @@ interface InputFieldProps {
 export default function InputField({ label, type = "text", value, onChange }: InputFieldProps) {
   return (
     <div className="flex flex-col">
-      <label className="text-sm font-medium mb-1 text-gray-700">{label}</label>
+      <label className="text-xs font-medium mb-1 text-gray-700">{label}</label>
       <input
         type={type}
         value={value}
