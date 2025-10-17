@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
 export function Sidebar() {
+  const router = useRouter();
   const [activeMain, setActiveMain] = useState("Employee Self-Service");
   const [activeSub, setActiveSub] = useState("Personal Information");
 
@@ -29,6 +31,17 @@ export function Sidebar() {
     "Help & Support",
   ];
 
+  // Function to convert text to slug
+  const toSlug = (text: string) =>
+    text.toLowerCase().replace(/&/g, "and").replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
+
+  // Function to handle sub menu click
+  const handleSubMenuClick = (item: string) => {
+    setActiveSub(item);
+    const path = `/employee-self-service/${toSlug(item)}`;
+    router.push(path);
+  };
+
   return (
     <aside className="w-64 bg-[#eef8ff] p-4">
       {/* Employee Self-Service Section */}
@@ -38,7 +51,7 @@ export function Sidebar() {
           {subMenus.map((item) => (
             <li
               key={item}
-              onClick={() => setActiveSub(item)}
+              onClick={() => handleSubMenuClick(item)}
               className={`pl-3 cursor-pointer text-sm ${
                 activeSub === item
                   ? "font-semibold text-black"
