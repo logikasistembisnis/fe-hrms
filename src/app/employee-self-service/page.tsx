@@ -25,11 +25,10 @@ export default function EmployeeSelfServicePage() {
 
     return (
         <main
-            className="relative min-h-screen bg-cover bg-center"
-            style={{ backgroundImage: "url('/bg-employee.png')" }}
+            className="flex flex-col md:flex-row min-h-screen bg-black"
         >
             {/* Left Content */}
-            <div className="absolute inset-0 bg-black/90 flex flex-col justify-center md:w-1/2 px-8 md:px-16 py-12 text-white">
+            <div className=" flex flex-col justify-center items-start w-full md:w-1/2 px-8 md:px-16 py-12 text-white">
                 {/* Logo */}
                 <div className="flex items-center mb-6">
                     <Image
@@ -38,6 +37,7 @@ export default function EmployeeSelfServicePage() {
                         width={100}
                         height={100}
                         className="w-40 h-auto"
+                        quality={100}
                     />
                 </div>
 
@@ -74,7 +74,7 @@ export default function EmployeeSelfServicePage() {
                 </div>
 
                 {/* Start Button */}
-                <div className="flex justify-center">
+                <div className="w-full flex justify-center">
                     <button 
                     onClick={() => router.push("/employee-self-service/personal-information")}
                     className="flex items-center gap-3 text-3xl font-bold text-white cursor-pointer">
@@ -85,6 +85,12 @@ export default function EmployeeSelfServicePage() {
                     </button>
                 </div>
             </div>
+            <div
+        className="hidden md:block w-1/2 bg-cover bg-center relative"
+        style={{ backgroundImage: "url('/bg-employee.png')" }}
+      >
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
         </main>
     );
 }

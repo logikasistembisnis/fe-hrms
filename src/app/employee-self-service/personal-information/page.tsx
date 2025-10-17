@@ -18,9 +18,9 @@ export default function InformationPage() {
       {/* Header Section */}
       <div className="flex justify-between items-start mb-3">
         {/* Displays user profile name and basic info */}
-        <ProfileHeader name="Rangga" />
+        <ProfileHeader name="Rangga" text="Yuk cek lagi kelengkapan data kamu :)" />
         {/* Shows completion progress of the profile as a percentage */}
-        <ProfileProgress percentage={78} />
+        <ProfileProgress text="Persentase Kelengkapan Datamu" value="" percentage={78} />
       </div>
 
       {/* Form Step 1 */}

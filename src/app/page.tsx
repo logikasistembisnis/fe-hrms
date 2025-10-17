@@ -1,10 +1,9 @@
 "use client";
 import { CardMenu } from "@/components/CardMenu";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
     const router = useRouter();
-    const pathname = usePathname();
 
     // Define the menu items
     const menus = [
