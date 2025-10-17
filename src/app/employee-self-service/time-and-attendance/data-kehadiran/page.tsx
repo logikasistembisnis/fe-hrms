@@ -2,6 +2,7 @@ import ProfileHeader from "@/components/information/ProfileHeader";
 import ProfileProgress from "@/components/information/ProfileProgress";
 
 export default function DataKehadiran() {
+    // Sample data
     const data = [
         { no: 1, tanggal: "1 November 2024", hari: "Jumat", jadwalMasuk: "08.00", jadwalKeluar: "17.00", aktualMasuk: "07.30", aktualKeluar: "17.10", keterangan: "OK", tindakLanjut: "REVISI (PRESENSI)", },
         { no: 2, tanggal: "2 November 2024", hari: "Jumat", jadwalMasuk: "08.00", jadwalKeluar: "17.00", aktualMasuk: "07.30", aktualKeluar: "17.10", keterangan: "OK", tindakLanjut: "REVISI (PRESENSI)", },
@@ -22,6 +23,7 @@ export default function DataKehadiran() {
                 <div className="border-2 border-blue-400 rounded-md overflow-auto max-h-[400px]">
                     <table className="min-w-full text-sm text-left border-collapse">
                         <thead className="bg-blue-50 sticky top-0 z-10">
+                            {/* Table header */}
                             <tr>
                                 <th className="p-2 w-10 text-center">NO.</th>
                                 <th className="p-2">TANGGAL</th>
@@ -35,6 +37,7 @@ export default function DataKehadiran() {
                             </tr>
                         </thead>
                         <tbody>
+                            {/* Table rows */}
                             {data.map((item) => (
                                 <tr key={item.no} className="hover:bg-gray-50">
                                     <td className="p-2 text-center">{item.no}</td>
@@ -44,8 +47,8 @@ export default function DataKehadiran() {
                                     <td className="p-2 text-center">{item.jadwalKeluar}</td>
                                     <td
                                         className={`p-2 text-center ${item.keterangan === "TERLAMBAT MASUK"
-                                                ? "text-red-500 font-semibold"
-                                                : ""
+                                            ? "text-red-500 font-semibold"
+                                            : ""
                                             }`}
                                     >
                                         {item.aktualMasuk}
@@ -55,7 +58,7 @@ export default function DataKehadiran() {
                                     <td className="p-2">{item.tindakLanjut}</td>
                                 </tr>
                             ))}
-                            {/* Baris kosong biar tampilan mirip contoh */}
+                            {/* Empty rows */}
                             {Array.from({ length: 11 }).map((_, i) => (
                                 <tr key={`empty-${i}`}>
                                     <td className="p-2 text-center">{i + data.length + 1}</td>

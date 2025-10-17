@@ -26,11 +26,10 @@ export default function LayoutEmployee({
   const basePath = "/employee-self-service";
 
   // Show the sidebar if the component is mounted and the current route is not the base path
-  const showSidebar = isClient && pathname.startsWith(`${basePath}/`) && pathname !== basePath; 
+  const showSidebar = isClient && pathname.startsWith(`${basePath}/`) && pathname !== basePath;
 
   return (
-    <div className={`min-h-screen flex bg-white transition-all duration-300 ${
-        showSidebar ? "py-4" : ""
+    <div className={`min-h-screen flex bg-white transition-all duration-300 ${showSidebar ? "py-4" : ""
       }`}>
       {/* SIDEBAR + CONTENT */}
       <div className="flex flex-1 relative transition-all duration-300">
@@ -66,11 +65,10 @@ export default function LayoutEmployee({
 
         {/* CONTENT */}
         <main
-          className={`flex-1 transition-all duration-300 ${
-            showSidebar
+          className={`flex-1 transition-all duration-300 ${showSidebar
               ? `${isSidebarOpen ? "px-6 py-3 ml-0" : "px-6 py-3 ml-2"}`
               : ""
-          }`}
+            }`}
         >
           {children}
         </main>

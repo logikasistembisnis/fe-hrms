@@ -5,13 +5,15 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "../attendance/calender-custom.css";
 
+// Define the expected props for this component
 interface CutiIjinCardProps {
     type: "cuti" | "ijin";
 }
 
 export default function CutiIjinCard({ type }: CutiIjinCardProps) {
+    // Define the state for the selected date and list of cuti and ijin options
     const isCuti = type === "cuti";
-
+    // menu cuti & ijin
     const cutiList = [
         "CUTI TAHUNAN",
         "CUTI SAKIT TANPA SURAT DOKTER",
@@ -39,14 +41,17 @@ export default function CutiIjinCard({ type }: CutiIjinCardProps) {
         "IJIN TUGAS NEGARA",
     ];
 
+    // get list
     const list = isCuti ? cutiList : ijinList;
-
+    //  default selected first item
     const [selectedItem, setSelectedItem] = useState<string>(list[0]);
+    // get start date dan end date
     const [selectedRange, setSelectedRange] = useState<[Date | null, Date | null]>([
         null,
         null,
     ]);
 
+    // reset selected item & date
     useEffect(() => {
         setSelectedItem(list[0]);
         setSelectedRange([null, null]);
@@ -54,7 +59,7 @@ export default function CutiIjinCard({ type }: CutiIjinCardProps) {
 
     return (
         <div className="mt-5 flex justify-between items-start p-6">
-            {/* Kolom 1 */}
+            {/* Column 1 */}
             <div className="flex flex-col items-center w-1/4">
                 <h3 className="font-bold mb-2">
                     {isCuti ? "SISA CUTI KAMU" : "JUMLAH IJIN KAMU"}
@@ -66,7 +71,7 @@ export default function CutiIjinCard({ type }: CutiIjinCardProps) {
                 </button>
             </div>
 
-            {/* Kolom 2 */}
+            {/* Column 2 */}
             <div className="w-1/4">
                 <h3 className="font-bold mb-2">{isCuti ? "CUTI" : "IJIN"}</h3>
                 <div className="max-h-40 overflow-y-auto text-sm space-y-1">
@@ -85,7 +90,7 @@ export default function CutiIjinCard({ type }: CutiIjinCardProps) {
                 </div>
             </div>
 
-            {/* Kolom 3 */}
+            {/* Column 3 */}
             <div className="flex flex-col items-center w-1/4">
                 <h3 className="font-bold mb-2">TANGGAL</h3>
                 <div className="shadow-md">
@@ -102,7 +107,7 @@ export default function CutiIjinCard({ type }: CutiIjinCardProps) {
                 </button>
             </div>
 
-            {/* Kolom 4 */}
+            {/* Column 4 */}
             <div className="flex flex-col items-center w-1/4">
                 <h3 className="font-bold mb-2">DOKUMEN</h3>
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700">

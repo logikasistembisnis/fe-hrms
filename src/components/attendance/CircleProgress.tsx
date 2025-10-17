@@ -1,14 +1,16 @@
 "use client";
 import React from "react";
 
+// Define the expected props for this component
 interface CircleProgressProps {
     percentage: number;
 }
 
 export default function CircleProgress({ percentage }: CircleProgressProps) {
-    const radius = 36;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (percentage / 100) * circumference;
+    // Calculate the offset for the circle
+    const radius = 36; //radius lingkaran
+    const circumference = 2 * Math.PI * radius; //keliling lingkaran
+    const offset = circumference - (percentage / 100) * circumference; //panjang bagian lingkaran yang belum diisi
 
     return (
         <div className="relative w-24 h-24">
