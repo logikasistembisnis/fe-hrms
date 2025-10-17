@@ -1,16 +1,19 @@
 import React from "react";
 
 interface ProfileProgressProps {
+  text: string;
+  value: string;
   percentage: number;
 }
 
-export default function ProfileProgress({ percentage }: ProfileProgressProps) {
+export default function ProfileProgress({ text, value, percentage }: ProfileProgressProps) {
   return (
     <div className="flex items-center gap-4">
       {/* Title */}
-      <p className="text-sm font-semibold text-gray-700 uppercase tracking-wide w-30 text-center">
-        Persentase Kelengkapan Datamu
-      </p>
+      <div className="text-sm font-bold text-gray-700 uppercase tracking-wide w-30 text-center flex flex-col">
+        <p>{text}</p>
+        <p>{value}</p>
+      </div>
 
       {/* Diagram */}
       <div className="relative w-20 h-20">

@@ -4,9 +4,10 @@ import React from "react";
 // Define the expected props for this component
 interface ProfileHeaderProps {
   name: string;
+  text: string;
 }
 
-export default function ProfileHeader({ name }: ProfileHeaderProps) {
+export default function ProfileHeader({ name, text }: ProfileHeaderProps) {
   return (
     <div className="flex items-center gap-4">
       {/* Profile picture (avatar) */}
@@ -26,7 +27,7 @@ export default function ProfileHeader({ name }: ProfileHeaderProps) {
           Apa kabar hari ini? Semoga selalu sehat ya, semangat!
         </p>
         <p className="text-sm">
-          Yuk cek lagi kelengkapan data kamu :)
+          {text}
         </p>
       </div>
     </div>
