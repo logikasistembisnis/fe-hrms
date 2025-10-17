@@ -2,8 +2,8 @@
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { HeaderAdmin } from "@/components/HeaderAdmin";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function ClientLayout({
     children,
@@ -12,13 +12,6 @@ export default function ClientLayout({
 }) {
     // Get the current pathname
     const pathname = usePathname();
-    // State to track if the component is mounted
-    const [isClient, setIsClient] = useState(false);
-
-    // Set isClient to true when the component mounts
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
 
     // Routes without header and footer
     const noHeaderFooterRoutes = [
@@ -33,9 +26,18 @@ export default function ClientLayout({
         "/industrial-relationship",
     ];
 
-    // Check if the current route should hide the header and footer
-    const hideHeaderFooter =
-        isClient && noHeaderFooterRoutes.includes(pathname);
+    // deteksi jika path adalah salah satu root di atas → hide semuanya
+    const hideHeaderFooter = noHeaderFooterRoutes.includes(pathname);
+
+    // deteksi jika path adalah subroute dari salah satu (misal /employee-self-service/...)
+    const isSubRoute = noHeaderFooterRoutes.some(
+        (route) => pathname.startsWith(`${route}/`) && pathname !== route
+    );
+
+    const isHome = pathname === "/";
+
+    // sisanya berarti route lain → pakai header admin
+    const useAdminHeader = !hideHeaderFooter && !isSubRoute && !isHome;
 
     return (
         <div
@@ -43,7 +45,11 @@ export default function ClientLayout({
                 }`}
         >
             {/* Header */}
-            {!hideHeaderFooter && <Header />}
+            {!hideHeaderFooter && (
+                <>
+                    {isSubRoute || isHome ? <Header /> : <HeaderAdmin />}
+                </>
+            )}
 
             {/* Main content */}
             <main className="flex-1">{children}</main>
