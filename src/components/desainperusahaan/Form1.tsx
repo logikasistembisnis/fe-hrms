@@ -81,13 +81,13 @@ export default function Form1() {
                 ))}
               </select>
 
-              <button className="bg-green-100 text-green-700 px-3 py-1 rounded-md hover:bg-green-200">
+              <button className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-800">
                 Revisi
               </button>
 
               <button
                 onClick={() => deleteCompany(company.id)}
-                className="bg-red-100 text-red-700 px-3 py-1 rounded-md hover:bg-red-200"
+                className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-800"
               >
                 Hapus
               </button>
@@ -103,14 +103,14 @@ export default function Form1() {
         </p>
 
         <select className="border p-2 rounded-md w-full mb-4">
-          <option>Ya atau Tidak Dropdown</option>
+          <option></option>
           <option>Ya</option>
           <option>Tidak</option>
         </select>
 
         <p className="font-medium mb-3">Sebutkan nama perusahaannya</p>
         <select className="border p-2 rounded-md w-full">
-          <option>Dropdown dari</option>
+          <option></option>
           <option>PT. Holding Satu</option>
           <option>PT. Holding Dua</option>
         </select>
