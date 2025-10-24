@@ -15,44 +15,111 @@ import Form11 from "@/components/desainperusahaan/Form11";
 import Form12 from "@/components/desainperusahaan/Form12";
 import Form13 from "@/components/desainperusahaan/Form13";
 
+import { Company, Country } from "@/types/data";
+
+interface FormSubmitData {
+    companies: Company[];
+    localCompanies: Company[];
+    countries: Country[];
+}
+
 export default function DesainPerusahaan() {
     const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+    // fungsi dipanggil dari Form1
+    const handleFormSubmit = async ({
+        companies,
+        localCompanies,
+        countries,
+    }: FormSubmitData) => {
+        try {
+            setLoading(true);
+            // Gabungan data local dan api
+            const allCompanies = [...companies, ...localCompanies];
+
+            // Ubah jadi array data untuk dikirim ke backend
+            const payload = allCompanies.map((company) => {
+                // Mencari objek negara berdasarkan nama untuk kirim countryid
+                const countryObj = countries.find(
+                    (ct) => ct.name === company.country?.name
+                );
+                // Data api ambil companyid, data baru bagian companyid dikosongkan
+                return {
+                    companyid: company.companyid > 0 ? company.companyid : undefined,
+                    name: company.name,
+                    countryid: countryObj ? countryObj.countryid : null,
+                };
+            });
+
+            // kirim semuanya sekaligus (bukan satu per satu)
+            const response = await fetch(`${apiUrl}/company`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload), // array
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                console.error("Server error response:", text);
+                throw new Error("Gagal menyimpan data perusahaan");
+            }
+
+            alert("Semua data perusahaan berhasil disimpan!");
+            setStep(2);
+        } catch (err: unknown) {
+            console.error("Error:", err);
+            const message =
+                err instanceof Error ? err.message : "Terjadi kesalahan saat menyimpan data.";
+            alert(`${message}`);
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+
+    // Step 2: Simpan hasil edit Form2
+    const handleForm2Submit = async (companies: Company[]) => {
+        try {
+            setLoading(true);
+
+            const payload = companies.map((c) => ({
+                companyid: c.companyid,
+                name: c.name,
+                brandname: c.brandname,
+                entitytype: c.entitytype,
+                noindukberusaha: c.noindukberusaha,
+                npwp: c.npwp,
+                address: c.address,
+                telpno: c.telpno,
+                companyemail: c.companyemail,
+                logo: c.logo,
+            }));
+
+            const res = await fetch(`${apiUrl}/company`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) throw new Error("Gagal memperbarui data perusahaan");
+
+            alert("Data berhasil diperbarui!");
+            setStep(3);
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : "Terjadi kesalahan.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
         <div>
-            {step === 1 && (
-                <>
-                    <Form1 />
-                    <div className="flex justify-end mt-6">
-                        <button
-                            onClick={() => setStep(2)}
-                            className="bg-green-500 hover:bg-green-700 text-sm text-white font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Simpan & Lanjut
-                        </button>
-                    </div>
-                </>
-            )}
-            {step === 2 && (
-                <>
-                    <Form2 />
-                    <div className="flex gap-4 justify-end mt-6">
-                        <button
-                            onClick={() => setStep(1)}
-                            className="bg-green-100 hover:bg-green-300 text-sm text-gray-700 font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Kembali
-                        </button>
-
-                        <button
-                            onClick={() => setStep(3)}
-                            className="bg-green-500 hover:bg-green-700 text-sm text-white font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Simpan & Lanjut
-                        </button>
-                    </div>
-                </>
-            )}
+            {step === 1 && <Form1 onSubmit={handleFormSubmit} loading={loading} />}
+            {step === 2 && (<Form2 onSubmit={handleForm2Submit} loading={loading} onBack={() => setStep(1)}/>)}
             {step === 3 && (
                 <>
                     <Form3 />
