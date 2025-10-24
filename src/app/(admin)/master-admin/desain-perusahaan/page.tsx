@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import FormPerusahaan from "@/components/desainperusahaan/FormPerusahaan";
-import FormDetailPerusahaan from "@/components/desainperusahaan/FormDetailPerusahaan";
-import Form3 from "@/components/desainperusahaan/Form3";
+import FormCompany from "@/components/desainperusahaan/FormCompany";
+import FormCompanyDetails from "@/components/desainperusahaan/FormCompanyDetails";
+import FormCompanyDesign from "@/components/desainperusahaan/FormCompanyDesign";
 import Form4 from "@/components/desainperusahaan/Form4";
 import Form5 from "@/components/desainperusahaan/Form5";
 import Form6 from "@/components/desainperusahaan/Form6";
@@ -20,16 +20,16 @@ export default function DesainPerusahaan() {
 
     return (
         <div>
-            {step === 1 && (<FormPerusahaan onNextStep={() => setStep(2)}/>)}
+            {step === 1 && (<FormCompany onNextStep={() => setStep(2)}/>)}
             {step === 2 && (
-                <FormDetailPerusahaan
+                <FormCompanyDetails
                     onNextStep={() => setStep(3)}
                     onBack={() => setStep(1)}
                 />
             )}
             {step === 3 && (
                 <>
-                    <Form3 />
+                    <FormCompanyDesign />
                     <div className="flex gap-4 justify-end mt-6">
                         <button
                             onClick={() => setStep(2)}

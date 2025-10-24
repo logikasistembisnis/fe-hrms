@@ -9,7 +9,7 @@ interface Form2Props {
   onBack: () => void;
 }
 
-export default function FormDetailPerusahaan({ onNextStep, onBack}: Form2Props) {
+export default function FormCompanyDetails({ onNextStep, onBack}: Form2Props) {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [formData, setFormData] = useState<Partial<Company>>({});
@@ -151,33 +151,36 @@ export default function FormDetailPerusahaan({ onNextStep, onBack}: Form2Props) 
 
         {/* Brand name */}
         <div className="grid grid-cols-3 items-center gap-4">
-          <label className="font-medium text-sm">Nama Brand</label>
+          <label className="font-medium text-sm">Nama Brand Nama Brand/Komersial (jika berbeda)</label>
           <input
             type="text"
             value={formData.brandname || ""}
             onChange={(e) => handleChange("brandname", e.target.value)}
+            placeholder="Nama Brand"
             className="col-span-2 border border-gray-300 rounded-md p-2 bg-blue-50 focus:ring-2 focus:ring-blue-400 w-full"
           />
         </div>
 
         {/* Entity type */}
         <div className="grid grid-cols-3 items-center gap-4">
-          <label className="font-medium text-sm">Tipe Entitas</label>
+          <label className="font-medium text-sm">Tipe Entitas Hukum (PT, CV, Yayasan, dll.)</label>
           <input
             type="text"
             value={formData.entitytype || ""}
             onChange={(e) => handleChange("entitytype", e.target.value)}
+            placeholder="Telepon"
             className="col-span-2 border border-gray-300 rounded-md p-2 bg-blue-50 focus:ring-2 focus:ring-blue-400 w-full"
           />
         </div>
 
         {/* NIB */}
         <div className="grid grid-cols-3 items-center gap-4">
-          <label className="font-medium text-sm">Nomor Induk Berusaha</label>
+          <label className="font-medium text-sm">Nomor Induk Berusaha (NIB)</label>
           <input
             type="text"
             value={formData.noindukberusaha || ""}
             onChange={(e) => handleChange("noindukberusaha", e.target.value)}
+            placeholder="Nomor Induk Berusaha"
             className="col-span-2 border border-gray-300 rounded-md p-2 bg-blue-50 focus:ring-2 focus:ring-blue-400 w-full"
           />
         </div>
@@ -189,24 +192,26 @@ export default function FormDetailPerusahaan({ onNextStep, onBack}: Form2Props) 
             type="text"
             value={formData.npwp || ""}
             onChange={(e) => handleChange("npwp", e.target.value)}
+            placeholder="NPWP"
             className="col-span-2 border border-gray-300 rounded-md p-2 bg-blue-50 focus:ring-2 focus:ring-blue-400 w-full"
           />
         </div>
 
         {/* Alamat */}
         <div className="grid grid-cols-3 items-center gap-4">
-          <label className="font-medium text-sm">Alamat</label>
+          <label className="font-medium text-sm">Alamat Kantor Pusat</label>
           <input
             type="text"
             value={formData.address || ""}
             onChange={(e) => handleChange("address", e.target.value)}
+            placeholder="Alamat"
             className="col-span-2 border border-gray-300 rounded-md p-2 bg-blue-50 focus:ring-2 focus:ring-blue-400 w-full"
           />
         </div>
 
         {/* Telepon & Email */}
         <div className="grid grid-cols-3 items-center gap-4">
-          <label className="font-medium text-sm">Telepon & Email</label>
+          <label className="font-medium text-sm">Nomor Telepon & Email Resmi</label>
           <div className="col-span-2 flex gap-3">
             <input
               type="text"

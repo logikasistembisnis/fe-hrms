@@ -13,7 +13,7 @@ interface FormPerusahaanProps {
   onNextStep: () => void;
 }
 
-export default function FormPerusahaan({ onNextStep }: FormPerusahaanProps) {
+export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
   const [companiesFromAPI, setCompaniesFromAPI] = useState<Company[]>([]);
   const [localCompanies, setLocalCompanies] = useState<Company[]>([]);
   const [countries, setCountries] = useState<Country[]>([]);
