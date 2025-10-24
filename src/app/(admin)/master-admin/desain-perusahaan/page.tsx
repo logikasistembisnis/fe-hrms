@@ -15,65 +15,12 @@ import Form11 from "@/components/desainperusahaan/Form11";
 import Form12 from "@/components/desainperusahaan/Form12";
 import Form13 from "@/components/desainperusahaan/Form13";
 
-import { Company, Country } from "@/api/data";
-import { saveCompany } from "@/api/companyApi";
-
-interface FormSubmitData {
-    companies: Company[];
-    localCompanies: Company[];
-    countries: Country[];
-}
-
 export default function DesainPerusahaan() {
     const [step, setStep] = useState(1);
-    const [loading, setLoading] = useState(false);
-
-    const handleFormSubmit = async ({
-        companies,
-        localCompanies,
-        countries,
-    }: FormSubmitData) => {
-        try {
-            setLoading(true);
-
-            // Gabungkan data dari API dan lokal
-            const allCompanies = [...companies, ...localCompanies];
-
-            // Siapkan payload array
-            const payload = allCompanies.map((company) => {
-                const countryObj = countries.find(
-                    (ct) => ct.name === company.country?.name
-                );
-
-                return {
-                    companyid: company.companyid > 0 ? company.companyid : undefined,
-                    name: company.name,
-                    countryid: countryObj?.countryid ?? null,
-                };
-            });
-
-            console.log("Payload dikirim ke backend:", payload);
-
-            //  Kirim sekali ke PUT /company
-            const response = await saveCompany(payload);
-
-            console.log("Response dari backend:", response);
-
-            alert("Semua data perusahaan berhasil disimpan!");
-            setStep(2);
-        } catch (err: unknown) {
-            console.error("Error:", err);
-            const message =
-                err instanceof Error ? err.message : "Terjadi kesalahan saat menyimpan data.";
-            alert(message);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     return (
         <div>
-            {step === 1 && <FormPerusahaan onSubmit={handleFormSubmit} loading={loading} />}
+            {step === 1 && (<FormPerusahaan onNextStep={() => setStep(2)}/>)}
             {step === 2 && (
                 <FormDetailPerusahaan
                     onNextStep={() => setStep(3)}

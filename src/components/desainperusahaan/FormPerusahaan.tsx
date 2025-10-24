@@ -4,28 +4,25 @@ import { useState, useEffect } from "react";
 import { Company, Country } from "@/api/data";
 import {
   getCompanies,
+  saveCompany,
   deleteCompany,
-} from "@/api/companyApi"; // 🔹 panggil dari file API
-import { getCountries } from "@/api/countryApi"; // 🔹 (kita buat ini di bawah)
+} from "@/api/companyApi";
+import { getCountries } from "@/api/countryApi";
 
-interface Form1Props {
-  onSubmit: (data: {
-    companies: Company[];
-    localCompanies: Company[];
-    countries: Country[];
-  }) => void;
-  loading: boolean;
+interface FormPerusahaanProps {
+  onNextStep: () => void;
 }
 
-export default function FormPerusahaan({ onSubmit, loading }: Form1Props) {
+export default function FormPerusahaan({ onNextStep }: FormPerusahaanProps) {
   const [companiesFromAPI, setCompaniesFromAPI] = useState<Company[]>([]);
   const [localCompanies, setLocalCompanies] = useState<Company[]>([]);
   const [countries, setCountries] = useState<Country[]>([]);
   const [hasHolding, setHasHolding] = useState<string>("");
+  const [loading, setLoading] = useState(false);
   const [dataloading, setDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 🔹 ambil data dari API
+  //  ambil data dari API
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,13 +48,13 @@ export default function FormPerusahaan({ onSubmit, loading }: Form1Props) {
     fetchData();
   }, []);
 
-  // 🔹 hapus perusahaan
+  //  hapus perusahaan
   const handleDelete = async (id: number, source: "api" | "local") => {
     if (!confirm("Apakah Anda yakin ingin menghapus perusahaan ini?")) return;
 
     try {
       if (source === "api") {
-        await deleteCompany(id); // panggil API helper
+        await deleteCompany(id);
         const updated = companiesFromAPI.filter((c) => c.companyid !== id);
         setCompaniesFromAPI(updated);
         localStorage.setItem("companiesFromAPI", JSON.stringify(updated));
@@ -71,7 +68,7 @@ export default function FormPerusahaan({ onSubmit, loading }: Form1Props) {
     }
   };
 
-  // 🔹 tambah perusahaan baru (lokal)
+  //  tambah perusahaan baru (lokal)
   const handleAdd = () => {
     const newCompany: Company = {
       companyid: -(Math.random() * 100000),
@@ -84,7 +81,7 @@ export default function FormPerusahaan({ onSubmit, loading }: Form1Props) {
     localStorage.setItem("localCompanies", JSON.stringify(updated));
   };
 
-  // 🔹 update perusahaan lokal
+  //  update perusahaan lokal
   const handleLocalChange = (
     id: number,
     field: "name" | "country",
@@ -101,7 +98,7 @@ export default function FormPerusahaan({ onSubmit, loading }: Form1Props) {
     localStorage.setItem("localCompanies", JSON.stringify(updated));
   };
 
-  // 🔹 update perusahaan API (sementara simpan di state)
+  //  update perusahaan API (sementara simpan di state)
   const handleAPIChange = (
     id: number,
     field: "name" | "country",
@@ -123,13 +120,33 @@ export default function FormPerusahaan({ onSubmit, loading }: Form1Props) {
   if (dataloading) return <p className="p-6">Loading data perusahaan...</p>;
   if (error) return <p className="p-6 text-red-500">{error}</p>;
 
-  // 🔹 kirim ke parent
-  const handleSubmit = () => {
-    onSubmit({
-      companies: companiesFromAPI,
-      localCompanies,
-      countries,
-    });
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const allCompanies = [...companiesFromAPI, ...localCompanies];
+      const payload = allCompanies.map((company) => {
+        const countryObj = countries.find(
+          (ct) => ct.name === company.country?.name
+        );
+
+        return {
+          companyid: company.companyid > 0 ? company.companyid : undefined,
+          name: company.name,
+          countryid: countryObj?.countryid ?? null,
+        };
+      });
+
+      console.log("Payload:", payload);
+      await saveCompany(payload);
+
+      alert("Semua data perusahaan berhasil disimpan!");
+      onNextStep(); // pindah ke form berikutnya
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menyimpan data perusahaan");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
