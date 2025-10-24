@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Form1 from "@/components/desainperusahaan/Form1";
-import Form2 from "@/components/desainperusahaan/Form2";
+import FormPerusahaan from "@/components/desainperusahaan/FormPerusahaan";
+import FormDetailPerusahaan from "@/components/desainperusahaan/FormDetailPerusahaan";
 import Form3 from "@/components/desainperusahaan/Form3";
 import Form4 from "@/components/desainperusahaan/Form4";
 import Form5 from "@/components/desainperusahaan/Form5";
@@ -15,7 +15,8 @@ import Form11 from "@/components/desainperusahaan/Form11";
 import Form12 from "@/components/desainperusahaan/Form12";
 import Form13 from "@/components/desainperusahaan/Form13";
 
-import { Company, Country } from "@/types/data";
+import { Company, Country } from "@/api/data";
+import { saveCompany } from "@/api/companyApi";
 
 interface FormSubmitData {
     companies: Company[];
@@ -26,9 +27,7 @@ interface FormSubmitData {
 export default function DesainPerusahaan() {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    // fungsi dipanggil dari Form1
     const handleFormSubmit = async ({
         companies,
         localCompanies,
@@ -36,37 +35,29 @@ export default function DesainPerusahaan() {
     }: FormSubmitData) => {
         try {
             setLoading(true);
-            // Gabungan data local dan api
+
+            // Gabungkan data dari API dan lokal
             const allCompanies = [...companies, ...localCompanies];
 
-            // Ubah jadi array data untuk dikirim ke backend
+            // Siapkan payload array
             const payload = allCompanies.map((company) => {
-                // Mencari objek negara berdasarkan nama untuk kirim countryid
                 const countryObj = countries.find(
                     (ct) => ct.name === company.country?.name
                 );
-                // Data api ambil companyid, data baru bagian companyid dikosongkan
+
                 return {
                     companyid: company.companyid > 0 ? company.companyid : undefined,
                     name: company.name,
-                    countryid: countryObj ? countryObj.countryid : null,
+                    countryid: countryObj?.countryid ?? null,
                 };
             });
 
-            // kirim semuanya sekaligus (bukan satu per satu)
-            const response = await fetch(`${apiUrl}/company`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload), // array
-            });
+            console.log("Payload dikirim ke backend:", payload);
 
-            if (!response.ok) {
-                const text = await response.text();
-                console.error("Server error response:", text);
-                throw new Error("Gagal menyimpan data perusahaan");
-            }
+            //  Kirim sekali ke PUT /company
+            const response = await saveCompany(payload);
+
+            console.log("Response dari backend:", response);
 
             alert("Semua data perusahaan berhasil disimpan!");
             setStep(2);
@@ -74,52 +65,21 @@ export default function DesainPerusahaan() {
             console.error("Error:", err);
             const message =
                 err instanceof Error ? err.message : "Terjadi kesalahan saat menyimpan data.";
-            alert(`${message}`);
-        }
-        finally {
-            setLoading(false);
-        }
-    };
-
-    // Step 2: Simpan hasil edit Form2
-    const handleForm2Submit = async (companies: Company[]) => {
-        try {
-            setLoading(true);
-
-            const payload = companies.map((c) => ({
-                companyid: c.companyid,
-                name: c.name,
-                brandname: c.brandname,
-                entitytype: c.entitytype,
-                noindukberusaha: c.noindukberusaha,
-                npwp: c.npwp,
-                address: c.address,
-                telpno: c.telpno,
-                companyemail: c.companyemail,
-                logo: c.logo,
-            }));
-
-            const res = await fetch(`${apiUrl}/company`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-            if (!res.ok) throw new Error("Gagal memperbarui data perusahaan");
-
-            alert("Data berhasil diperbarui!");
-            setStep(3);
-        } catch (err: unknown) {
-            alert(err instanceof Error ? err.message : "Terjadi kesalahan.");
+            alert(message);
         } finally {
             setLoading(false);
         }
     };
 
-
     return (
         <div>
-            {step === 1 && <Form1 onSubmit={handleFormSubmit} loading={loading} />}
-            {step === 2 && (<Form2 onSubmit={handleForm2Submit} loading={loading} onBack={() => setStep(1)}/>)}
+            {step === 1 && <FormPerusahaan onSubmit={handleFormSubmit} loading={loading} />}
+            {step === 2 && (
+                <FormDetailPerusahaan
+                    onNextStep={() => setStep(3)}
+                    onBack={() => setStep(1)}
+                />
+            )}
             {step === 3 && (
                 <>
                     <Form3 />
