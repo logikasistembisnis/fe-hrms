@@ -1,4 +1,3 @@
-// src/api/countryApi.ts
 import axios from "axios";
 import { Country } from "./data";
 

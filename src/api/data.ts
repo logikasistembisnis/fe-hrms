@@ -18,3 +18,9 @@ export interface Company {
   companyemail?: string | null;
   logo?: string | null;
 }
+
+export interface CompanyDesign {
+  companydesignid: number;
+  name: string;
+  level: number;
+}
