@@ -24,3 +24,10 @@ export interface CompanyDesign {
   name: string;
   level: number;
 }
+
+export interface Tenant {
+  tenantid: number;
+  name: string;
+  holdingflag: boolean | null;
+  holdingcompanyid: number | null;
+}
