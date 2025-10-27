@@ -17,6 +17,12 @@ export interface Company {
   telpno?: string | null;
   companyemail?: string | null;
   logo?: string | null;
+  companydesign?: {
+    name: string;
+  } | null;
+  reporttocompany?: {
+    name: string;
+  } | null;
 }
 
 export interface CompanyDesign {
