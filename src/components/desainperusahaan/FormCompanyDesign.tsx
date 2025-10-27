@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getCompanies } from "@/api/companyApi";
+import { getCompanies, saveCompanyDesign } from "@/api/companyApi";
 import { getCompanyDesign } from "@/api/companydesignApi";
 import { Company, CompanyDesign } from "@/api/data";
 
@@ -18,12 +18,19 @@ interface DesignCompany extends Company {
   reportTo: string;
 }
 
-export default function FormCompanyDesign() {
+export default function FormCompanyDesign({
+  onNextStep,
+  onBack,
+}: {
+  onNextStep: () => void;
+  onBack: () => void;
+}) {
   const [companies, setCompanies] = useState<DesignCompany[]>([]);
   const [companyDesign, setCompanyDesign] = useState<CompanyDesign[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  // Ambil data perusahaan dan desain dari API
+  //  Ambil data perusahaan & desain dari API
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,8 +41,8 @@ export default function FormCompanyDesign() {
 
         const apiCompanies = resCompanies.data.map((c) => ({
           ...c,
-          design: "" as DesignType,
-          reportTo: "",
+          design: (c.companydesign?.name || "") as DesignType,
+          reportTo: c.reporttocompany?.name || "",
         }));
 
         setCompanies(apiCompanies);
@@ -50,7 +57,7 @@ export default function FormCompanyDesign() {
     fetchData();
   }, []);
 
-  // Handle perubahan input
+  //  Handle perubahan dropdown
   const handleChange = (
     index: number,
     field: keyof DesignCompany,
@@ -59,7 +66,7 @@ export default function FormCompanyDesign() {
     const updated = [...companies];
     updated[index] = { ...updated[index], [field]: value };
 
-    // Jika ubah design → reset reportTo
+    // Jika ubah design, reset reportTo
     if (field === "design") {
       updated[index].reportTo = "";
     }
@@ -67,12 +74,12 @@ export default function FormCompanyDesign() {
     setCompanies(updated);
   };
 
-  // Tentukan opsi "melapor ke" berdasarkan design perusahaan
+  //  Tentukan opsi "melapor ke" berdasarkan desain
   const getReportToOptions = (currentDesign: DesignType) => {
     switch (currentDesign) {
       case "Super Holding":
       case "Stand Alone":
-        return []; // tidak perlu melapor ke siapa pun
+        return [];
       case "Holding":
         return companies.filter((c) => c.design === "Super Holding");
       case "Country Operation":
@@ -91,7 +98,40 @@ export default function FormCompanyDesign() {
     }
   };
 
-  // Fungsi untuk menggambar struktur hubungan perusahaan
+  //  Simpan ke backend
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+
+      const payload = companies
+        .filter((c) => c.design !== "")
+        .map((c) => {
+          const selectedDesign = companyDesign.find(
+            (d) => d.name === c.design
+          );
+          const reportToCompany = companies.find(
+            (r) => r.name === c.reportTo
+          );
+
+          return {
+            companyid: c.companyid,
+            companydesignid: selectedDesign?.companydesignid ?? null,
+            reporttocompanyid: reportToCompany?.companyid ?? null,
+          };
+        });
+
+      await saveCompanyDesign(payload);
+      alert("Desain perusahaan berhasil disimpan!");
+      onNextStep();
+    } catch (err) {
+      console.error("Gagal menyimpan desain perusahaan:", err);
+      alert("Terjadi kesalahan saat menyimpan data.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  //  Render diagram struktur
   const renderDiagram = () => {
     const superHolding = companies.find((c) => c.design === "Super Holding");
     if (!superHolding) return null;
@@ -255,7 +295,7 @@ export default function FormCompanyDesign() {
                 }
                 className="w-full border border-gray-300 rounded-md p-1 bg-blue-50 focus:ring-2 focus:ring-blue-400"
               >
-                <option value="">— Pilih —</option>
+                <option value="">Pilih</option>
                 {companyDesign.map((opt) => (
                   <option key={opt.companydesignid} value={opt.name}>
                     {opt.name}
@@ -290,8 +330,29 @@ export default function FormCompanyDesign() {
         );
       })}
 
-      {/* Diagram */}
+      {/* Diagram tetap tampil */}
       {renderDiagram()}
+
+      {/* Tombol Navigasi */}
+      <div className="flex gap-4 justify-end mt-6">
+        <button
+          onClick={onBack}
+          className="bg-green-100 hover:bg-green-300 text-sm text-gray-700 font-semibold py-2 px-6 rounded-full transition"
+          disabled={saving}
+        >
+          Kembali
+        </button>
+
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className={`${
+            saving ? "bg-gray-400" : "bg-green-500 hover:bg-green-700"
+          } text-sm text-white font-semibold py-2 px-6 rounded-full transition`}
+        >
+          {saving ? "Menyimpan..." : "Simpan & Lanjut"}
+        </button>
+      </div>
     </div>
   );
 }
