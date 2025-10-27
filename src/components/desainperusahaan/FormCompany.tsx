@@ -1,13 +1,11 @@
+// Form Master Design -> Desain Perusahaan -> No 1 dan 2
 "use client";
 
 import { useState, useEffect } from "react";
-import { Company, Country } from "@/api/data";
-import {
-  getCompanies,
-  saveCompany,
-  deleteCompany,
-} from "@/api/companyApi";
+import { Company, Country, Tenant } from "@/api/data";
+import { getCompanies, saveCompany, deleteCompany } from "@/api/companyApi";
 import { getCountries } from "@/api/countryApi";
+import { getTenant, updateTenant } from "@/api/tenantApi";
 
 interface FormPerusahaanProps {
   onNextStep: () => void;
@@ -17,29 +15,39 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
   const [companiesFromAPI, setCompaniesFromAPI] = useState<Company[]>([]);
   const [localCompanies, setLocalCompanies] = useState<Company[]>([]);
   const [countries, setCountries] = useState<Country[]>([]);
+  const [tenant, setTenant] = useState<Tenant | null>(null);
   const [hasHolding, setHasHolding] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [dataloading, setDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  //  ambil data dari API
+  // Fetch company, country, dan tenant
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [companyRes, countryRes] = await Promise.all([
+        const [companyRes, countryRes, tenantRes] = await Promise.all([
           getCompanies(),
           getCountries(),
+          getTenant(1), // tenant id 1
         ]);
 
+        // urutkan company berdasarkan id desc
         const sortedCompanies = (companyRes.data || []).sort(
           (a, b) => b.companyid - a.companyid
         );
 
         setCompaniesFromAPI(sortedCompanies);
         setCountries(countryRes.data || []);
-      } catch (err: unknown) {
+
+        const t: Tenant = tenantRes.data;
+        setTenant(t);
+
+        // Set pilihan dropdown dari data tenant
+        if (t.holdingflag === true) setHasHolding("Ya");
+        else if (t.holdingflag === false) setHasHolding("Tidak");
+      } catch (err) {
         console.error("Error loading data:", err);
-        setError("Gagal memuat data perusahaan");
+        setError("Gagal memuat data perusahaan/tenant");
       } finally {
         setDataLoading(false);
       }
@@ -48,7 +56,7 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
     fetchData();
   }, []);
 
-  //  hapus perusahaan
+  // Hapus perusahaan
   const handleDelete = async (id: number, source: "api" | "local") => {
     if (!confirm("Apakah Anda yakin ingin menghapus perusahaan ini?")) return;
 
@@ -68,20 +76,19 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
     }
   };
 
-  //  tambah perusahaan baru (lokal)
+  // Tambah perusahaan baru (lokal)
   const handleAdd = () => {
     const newCompany: Company = {
-      companyid: -(Math.random() * 100000),
+      companyid: -(Math.random() * 100000), // id negatif biar unik
       name: "",
       country: { name: "" },
     };
-
     const updated = [newCompany, ...localCompanies];
     setLocalCompanies(updated);
     localStorage.setItem("localCompanies", JSON.stringify(updated));
   };
 
-  //  update perusahaan lokal
+  // Update data perusahaan lokal
   const handleLocalChange = (
     id: number,
     field: "name" | "country",
@@ -98,7 +105,7 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
     localStorage.setItem("localCompanies", JSON.stringify(updated));
   };
 
-  //  update perusahaan API (sementara simpan di state)
+  // Update data perusahaan dari API
   const handleAPIChange = (
     id: number,
     field: "name" | "country",
@@ -120,15 +127,17 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
   if (dataloading) return <p className="p-6">Loading data perusahaan...</p>;
   if (error) return <p className="p-6 text-red-500">{error}</p>;
 
+  // Simpan ke backend ketika submit
   const handleSubmit = async () => {
     try {
       setLoading(true);
+
+      // Simpan semua perusahaan dulu
       const allCompanies = [...companiesFromAPI, ...localCompanies];
       const payload = allCompanies.map((company) => {
         const countryObj = countries.find(
           (ct) => ct.name === company.country?.name
         );
-
         return {
           companyid: company.companyid > 0 ? company.companyid : undefined,
           name: company.name,
@@ -136,14 +145,23 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
         };
       });
 
-      console.log("Payload:", payload);
+      console.log("Payload company:", payload);
       await saveCompany(payload);
 
-      alert("Semua data perusahaan berhasil disimpan!");
-      onNextStep(); // pindah ke form berikutnya
+      // Update tenant
+      const tenantPayload = {
+        holdingflag: hasHolding === "Ya",
+        holdingcompanyid: tenant?.holdingcompanyid || null,
+      };
+
+      console.log("Payload tenant:", tenantPayload);
+      await updateTenant(1, tenantPayload);
+
+      alert("Data perusahaan dan tenant berhasil disimpan!");
+      onNextStep();
     } catch (err) {
       console.error(err);
-      alert("Gagal menyimpan data perusahaan");
+      alert("Gagal menyimpan data perusahaan atau tenant");
     } finally {
       setLoading(false);
     }
@@ -167,7 +185,7 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
           </button>
 
           <div className="space-y-3">
-            {/* LOKAL */}
+            {/* Perusahaan dari lokalstorage */}
             {localCompanies.map((company) => (
               <div
                 key={company.companyid}
@@ -182,7 +200,6 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
                   }
                   className="py-2 px-3 flex-1 min-w-[150px] bg-gray-100 rounded-lg"
                 />
-
                 <select
                   value={company.country?.name || ""}
                   onChange={(e) =>
@@ -211,7 +228,7 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
               </div>
             ))}
 
-            {/* DARI API */}
+            {/* Perusahaan dari API */}
             {companiesFromAPI.map((company) => (
               <div
                 key={company.companyid}
@@ -225,11 +242,14 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
                   }
                   className="py-2 px-3 flex-1 min-w-[150px] bg-gray-100 rounded-lg"
                 />
-
                 <select
                   value={company.country?.name || ""}
                   onChange={(e) =>
-                    handleAPIChange(company.companyid, "country", e.target.value)
+                    handleAPIChange(
+                      company.companyid,
+                      "country",
+                      e.target.value
+                    )
                   }
                   className="py-2 px-3 flex-1 min-w-[180px] bg-gray-100 rounded-lg"
                 >
@@ -272,10 +292,17 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
           <select
             className="border p-2 rounded-md w-full"
             disabled={hasHolding === "Tidak" || hasHolding === ""}
+            value={tenant?.holdingcompanyid || ""}
+            onChange={(e) =>
+              setTenant({
+                ...tenant!,
+                holdingcompanyid: Number(e.target.value) || null,
+              })
+            }
           >
             <option value="">Pilih Perusahaan</option>
             {allCompanies.map((c) => (
-              <option key={c.companyid} value={c.name}>
+              <option key={c.companyid} value={c.companyid}>
                 {c.name || "(Belum diisi)"}
               </option>
             ))}
@@ -283,15 +310,15 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
         </div>
       </div>
 
+      {/* Tombol simpan */}
       <div className="flex justify-end">
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className={`mt-6 py-2 px-6 rounded-full text-white font-semibold ${
-            loading
+          className={`mt-6 py-2 px-6 rounded-full text-white font-semibold ${loading
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-green-600 hover:bg-green-800"
-          }`}
+            }`}
         >
           {loading ? "Menyimpan..." : "Simpan & Lanjut"}
         </button>
