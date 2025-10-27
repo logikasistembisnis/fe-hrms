@@ -43,6 +43,16 @@ export const saveCompanyDetails = async (
   return response.data;
 };
 
+// Simpan desain perusahaan (Form Desain Perusahaan)
+export const saveCompanyDesign = async (companies: Partial<Company>[]): Promise<ApiResponse<null>> => {
+  const response = await axios.put<ApiResponse<null>>(
+    `${API_BASE}/company/companydesign`,
+    companies,
+    { headers: { "Content-Type": "application/json" } }
+  );
+  return response.data;
+};
+
 // Hapus perusahaan
 export const deleteCompany = async (id: number): Promise<ApiResponse<null>> => {
   const response = await axios.delete<ApiResponse<null>>(`${API_BASE}/company/${id}`);
