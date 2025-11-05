@@ -4,7 +4,7 @@ import { useState } from "react";
 import FormCompany from "@/components/desainperusahaan/FormCompany";
 import FormCompanyDetails from "@/components/desainperusahaan/FormCompanyDetails";
 import FormCompanyDesign from "@/components/desainperusahaan/FormCompanyDesign";
-import Form4 from "@/components/desainperusahaan/Form4";
+import FormBaseOrgStruc from "@/components/desainperusahaan/FormBaseOrgStruc";
 import Form5 from "@/components/desainperusahaan/Form5";
 import Form6 from "@/components/desainperusahaan/Form6";
 import Form7 from "@/components/desainperusahaan/Form7";
@@ -20,7 +20,7 @@ export default function DesainPerusahaan() {
 
     return (
         <div>
-            {step === 1 && (<FormCompany onNextStep={() => setStep(2)}/>)}
+            {step === 1 && (<FormCompany onNextStep={() => setStep(2)} />)}
             {step === 2 && (
                 <FormCompanyDetails
                     onNextStep={() => setStep(3)}
@@ -29,27 +29,15 @@ export default function DesainPerusahaan() {
             )}
             {step === 3 && (
                 <>
-                    <FormCompanyDesign />
-                    <div className="flex gap-4 justify-end mt-6">
-                        <button
-                            onClick={() => setStep(2)}
-                            className="bg-green-100 hover:bg-green-300 text-sm text-gray-700 font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Kembali
-                        </button>
-
-                        <button
-                            onClick={() => setStep(4)}
-                            className="bg-green-500 hover:bg-green-700 text-sm text-white font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Simpan & Lanjut
-                        </button>
-                    </div>
+                    <FormCompanyDesign
+                        onNextStep={() => setStep(4)}
+                        onBack={() => setStep(2)}
+                    />
                 </>
             )}
             {step === 4 && (
                 <>
-                    <Form4 />
+                    <FormBaseOrgStruc />
                     <div className="flex gap-4 justify-end mt-6">
                         <button
                             onClick={() => setStep(3)}
