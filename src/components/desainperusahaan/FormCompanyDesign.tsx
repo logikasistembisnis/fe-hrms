@@ -1,6 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+// Impor React Flow
+import ReactFlow, {
+  Controls,
+  Background,
+  useNodesState,
+  useEdgesState,
+  MarkerType,
+  Node,
+  Edge,
+} from "reactflow";
+// Impor CSS wajib untuk React Flow
+import "reactflow/dist/style.css";
+
+// Impor Dagre untuk layout otomatis
+import dagre from "dagre";
+
 import { getCompanies, saveCompanyDesign } from "@/api/companyApi";
 import { getCompanyDesign } from "@/api/companydesignApi";
 import { Company, CompanyDesign } from "@/api/data";
@@ -18,6 +34,172 @@ interface DesignCompany extends Company {
   reportTo: string;
 }
 
+// --- Helper Styling React Flow ---
+const getNodeStyle = (design: DesignType) => {
+  const baseStyle = {
+    padding: "8px 16px",
+    borderWidth: "1px",
+    borderRadius: "8px",
+    fontSize: "12px",
+    textAlign: "center" as const,
+  };
+
+  switch (design) {
+    case "Super Holding":
+      return {
+        ...baseStyle,
+        backgroundColor: "#DBEAFE",
+        borderColor: "#93C5FD",
+        color: "#1E3A8A",
+      };
+    case "Holding":
+      return {
+        ...baseStyle,
+        backgroundColor: "#E0F2FE",
+        borderColor: "#7DD3FC",
+        color: "#075985",
+      };
+    case "Country Operation":
+      return {
+        ...baseStyle,
+        backgroundColor: "#FEF9C3",
+        borderColor: "#FDE047",
+        color: "#713F12",
+      };
+    case "Subsidiary":
+      return {
+        ...baseStyle,
+        backgroundColor: "#DCFCE7",
+        borderColor: "#86EFAC",
+        color: "#166534",
+      };
+    case "Stand Alone":
+      return {
+        ...baseStyle,
+        backgroundColor: "#F3F4F6",
+        borderColor: "#D1D5DB",
+        color: "#374151",
+      };
+    default:
+      return {
+        ...baseStyle,
+        backgroundColor: "#FFFFFF",
+        borderColor: "#D1D5DB",
+      };
+  }
+};
+
+// --- Konstanta untuk Layout Dagre ---
+const nodeWidth = 180;
+const nodeHeight = 60;
+
+const getLayoutedElements = (
+  nodesToLayout: Node[],
+  edgesToLayout: Edge[]
+) => {
+  const g = new dagre.graphlib.Graph();
+  g.setGraph({ rankdir: 'TB', nodesep: 50, ranksep: 60 });
+  g.setDefaultEdgeLabel(() => ({}));
+
+  nodesToLayout.forEach((node) => {
+    g.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edgesToLayout.forEach((edge) => {
+    g.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(g);
+
+  const layoutedNodes = nodesToLayout.map((node) => {
+    const { x, y } = g.node(node.id);
+    return {
+      ...node,
+      position: { x: x - nodeWidth / 2, y: y - nodeHeight / 2 },
+    };
+  });
+
+  return { nodes: layoutedNodes, edges: edgesToLayout };
+};
+
+
+// --- Komponen Diagram React Flow ---
+function CompanyChart({ companies }: { companies: DesignCompany[] }) {
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  useEffect(() => {
+    // 1. Filter perusahaan yang memiliki desain
+    const validCompanies = companies.filter((c) => c.design !== "");
+
+    // 2. Buat Nodes (TANPA 'position' awal)
+    const initialNodes = validCompanies.map((c) => ({
+      id: c.companyid.toString(),
+      type: "default",
+      data: {
+        label: (
+          // Beri style agar lebar node konsisten
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          }}> {/* 32px = 16px padding L/R */}
+            <p className="font-semibold whitespace-normal">{c.name}</p>
+            <p className="text-xs italic">{c.design}</p>
+          </div>
+        ),
+      },
+      position: { x: 0, y: 0 }, // Tidak ada posisi awal
+      style: getNodeStyle(c.design),
+    }));
+
+    // 3. Buat Edges (sama seperti sebelumnya)
+    const initialEdges = validCompanies
+      .filter((c) => c.reportTo !== "") // Hanya yg "melapor ke"
+      .map((c) => {
+        // Cari parent
+        const parent = companies.find((p) => p.name === c.reportTo);
+        if (!parent) return null; // Jika parent tidak ditemukan
+
+        return {
+          id: `e-${parent.companyid}-${c.companyid}`,
+          source: parent.companyid.toString(), // ID parent
+          target: c.companyid.toString(), // ID child
+          type: "smoothstep", // Tipe garis
+          markerEnd: { type: MarkerType.ArrowClosed, color: "#6b7280" }, // Tanda panah
+          style: { stroke: "#6b7280" },
+        };
+      })
+      .filter((e): e is NonNullable<typeof e> => e !== null); // Hapus yg null
+
+    // 4. Hitung Layout menggunakan Dagre
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      initialNodes,
+      initialEdges
+    );
+
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
+  }, [companies, setNodes, setEdges]); // Dijalankan ulang saat `companies` berubah
+
+  return (
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      fitView // Otomatis zoom & pan agar semua node terlihat
+      nodesDraggable={true} // Node bisa digeser
+    >
+      <Controls />
+      <Background />
+    </ReactFlow>
+  );
+}
+
+// --- Komponen Form Utama (Tidak Berubah) ---
 export default function FormCompanyDesign({
   onNextStep,
   onBack,
@@ -30,7 +212,7 @@ export default function FormCompanyDesign({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  //  Ambil data perusahaan & desain dari API
+  // Ambil data perusahaan & desain dari API
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -57,7 +239,7 @@ export default function FormCompanyDesign({
     fetchData();
   }, []);
 
-  //  Handle perubahan dropdown
+  // Handle perubahan dropdown
   const handleChange = (
     index: number,
     field: keyof DesignCompany,
@@ -74,7 +256,7 @@ export default function FormCompanyDesign({
     setCompanies(updated);
   };
 
-  //  Tentukan opsi "melapor ke" berdasarkan desain
+  // Tentukan opsi "melapor ke" berdasarkan desain
   const getReportToOptions = (currentDesign: DesignType) => {
     switch (currentDesign) {
       case "Super Holding":
@@ -98,7 +280,7 @@ export default function FormCompanyDesign({
     }
   };
 
-  //  Simpan ke backend
+  // Simpan ke backend
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -121,6 +303,7 @@ export default function FormCompanyDesign({
         });
 
       await saveCompanyDesign(payload);
+      // Menggunakan alert bawaan seperti kode asli
       alert("Desain perusahaan berhasil disimpan!");
       onNextStep();
     } catch (err) {
@@ -131,129 +314,18 @@ export default function FormCompanyDesign({
     }
   };
 
-  //  Render diagram struktur
-  const renderDiagram = () => {
-    const superHolding = companies.find((c) => c.design === "Super Holding");
-    if (!superHolding) return null;
-
-    const holdings = companies.filter(
-      (c) => c.design === "Holding" && c.reportTo === superHolding.name
+  // Memoize nilai-nilai ini agar tidak dihitung ulang pada setiap render
+  const { hasAnyDesign, hasRoot } = useMemo(() => {
+    const anyDesign = companies.some((c) => c.design !== "");
+    const root = companies.some(
+      (c) => c.design === "Super Holding" || c.design === "Stand Alone"
     );
-
-    const countryOps = companies.filter(
-      (c) =>
-        c.design === "Country Operation" &&
-        (c.reportTo === superHolding.name ||
-          holdings.some((h) => c.reportTo === h.name))
-    );
-
-    const subsidiaries = companies.filter(
-      (c) =>
-        c.design === "Subsidiary" &&
-        (c.reportTo === superHolding.name ||
-          holdings.some((h) => c.reportTo === h.name) ||
-          countryOps.some((co) => c.reportTo === co.name))
-    );
-
-    const standAlones = companies.filter((c) => c.design === "Stand Alone");
-
-    return (
-      <div className="flex flex-col items-center mt-10 relative">
-        {/* Super Holding */}
-        <div className="flex flex-col items-center">
-          <div className="border border-gray-300 rounded-md px-4 py-2 bg-blue-100 font-medium shadow-sm">
-            {superHolding.name}
-          </div>
-          <p className="text-gray-400 text-xs italic mt-1">Super Holding</p>
-        </div>
-
-        {/* Hubungkan ke Holding */}
-        {holdings.length > 0 && <div className="w-0.5 h-6 bg-gray-400"></div>}
-
-        {/* Holding Layer */}
-        {holdings.length > 0 && (
-          <div className="flex flex-col items-center">
-            <div className="flex justify-center gap-6">
-              {holdings.map((h) => (
-                <div
-                  key={h.name}
-                  className="border border-gray-300 rounded-md px-4 py-2 bg-blue-50 font-medium shadow-sm"
-                >
-                  {h.name}
-                </div>
-              ))}
-            </div>
-            <p className="text-gray-400 text-xs italic mt-2">Holding</p>
-          </div>
-        )}
-
-        {/* Country Operation Layer */}
-        {countryOps.length > 0 && (
-          <>
-            <div className="w-0.5 h-6 bg-gray-400"></div>
-            <div className="flex flex-col items-center">
-              <div className="flex justify-center gap-6 flex-wrap">
-                {countryOps.map((c) => (
-                  <div
-                    key={c.name}
-                    className="border border-gray-300 rounded-md px-4 py-2 bg-yellow-50 text-xs shadow-sm"
-                  >
-                    {c.name}
-                  </div>
-                ))}
-              </div>
-              <p className="text-gray-400 text-xs italic mt-2">
-                Country Operation
-              </p>
-            </div>
-          </>
-        )}
-
-        {/* Subsidiary Layer */}
-        {subsidiaries.length > 0 && (
-          <>
-            <div className="w-0.5 h-6 bg-gray-400"></div>
-            <div className="flex flex-col items-center">
-              <div className="flex justify-center gap-6 flex-wrap">
-                {subsidiaries.map((s) => (
-                  <div
-                    key={s.name}
-                    className="border border-gray-300 rounded-md px-4 py-2 bg-green-50 text-xs shadow-sm"
-                  >
-                    {s.name}
-                  </div>
-                ))}
-              </div>
-              <p className="text-gray-400 text-xs italic mt-2">Subsidiary</p>
-            </div>
-          </>
-        )}
-
-        {/* Stand Alone */}
-        {standAlones.length > 0 && (
-          <>
-            <div className="w-0.5 h-6 bg-gray-400"></div>
-            <div className="flex flex-col items-center">
-              <div className="flex justify-center gap-6 flex-wrap">
-                {standAlones.map((s) => (
-                  <div
-                    key={s.name}
-                    className="border border-gray-300 rounded-md px-4 py-2 bg-gray-100 text-xs shadow-sm"
-                  >
-                    {s.name}
-                  </div>
-                ))}
-              </div>
-              <p className="text-gray-400 text-xs italic mt-2">Stand Alone</p>
-            </div>
-          </>
-        )}
-      </div>
-    );
-  };
+    return { hasAnyDesign: anyDesign, hasRoot: root };
+  }, [companies]);
 
   if (loading) return <p className="p-6 text-gray-600">Memuat data...</p>;
 
+  // --- Render utama (Form + Diagram) ---
   return (
     <div className="p-6 w-full mx-auto">
       <h3 className="text-lg font-semibold mb-4">
@@ -286,7 +358,6 @@ export default function FormCompanyDesign({
               {company.country?.name || ""}
             </div>
 
-            {/* Dropdown Design */}
             <div className="p-2 border-r border-gray-300">
               <select
                 value={company.design}
@@ -304,7 +375,6 @@ export default function FormCompanyDesign({
               </select>
             </div>
 
-            {/* Dropdown ReportTo */}
             <div className="p-2">
               <select
                 value={company.reportTo}
@@ -312,11 +382,10 @@ export default function FormCompanyDesign({
                   handleChange(index, "reportTo", e.target.value)
                 }
                 disabled={isReportToDisabled}
-                className={`w-full border border-gray-300 rounded-md p-1 ${
-                  isReportToDisabled
+                className={`w-full border border-gray-300 rounded-md p-1 ${isReportToDisabled
                     ? "bg-gray-100 text-gray-400"
                     : "bg-blue-50 focus:ring-2 focus:ring-blue-400"
-                }`}
+                  }`}
               >
                 <option value="">—</option>
                 {reportOptions.map((c) => (
@@ -330,8 +399,39 @@ export default function FormCompanyDesign({
         );
       })}
 
-      {/* Diagram tetap tampil */}
-      {renderDiagram()}
+      {/* Diagram React Flow */}
+      <div
+        className="mt-6 w-full p-6 bg-gray-50 rounded-lg border overflow-hidden"
+        style={{ height: "500px" }}
+      >
+        <h4 className="text-md font-semibold mb-4 text-center">
+          Bagan Struktur Organisasi (Live Preview)
+        </h4>
+
+        {/* Logika untuk menampilkan placeholder atau error */}
+        {!hasAnyDesign && (
+          <div className="h-full flex flex-col justify-center items-center text-center text-gray-500">
+            <p>Bagan struktur akan muncul di sini.</p>
+            <p className="text-sm">
+              Mulai dengan memilih &quot;Super Holding&quot; atau &quot;Stand
+              Alone&quot; pada tabel di atas.
+            </p>
+          </div>
+        )}
+
+        {hasAnyDesign && !hasRoot && (
+          <div className="h-full flex flex-col justify-center items-center text-center text-red-600">
+            <p className="font-semibold">Struktur Tidak Valid</p>
+            <p className="text-sm">
+              Tidak ditemukan &quot;Super Holding&quot; atau &quot;Stand
+              Alone&quot; sebagai akar struktur.
+            </p>
+          </div>
+        )}
+
+        {/* Render chart hanya jika ada desain DAN ada root */}
+        {hasAnyDesign && hasRoot && <CompanyChart companies={companies} />}
+      </div>
 
       {/* Tombol Navigasi */}
       <div className="flex gap-4 justify-end mt-6">
@@ -346,9 +446,8 @@ export default function FormCompanyDesign({
         <button
           onClick={handleSave}
           disabled={saving}
-          className={`${
-            saving ? "bg-gray-400" : "bg-green-500 hover:bg-green-700"
-          } text-sm text-white font-semibold py-2 px-6 rounded-full transition`}
+          className={`${saving ? "bg-gray-400" : "bg-green-500 hover:bg-green-700"
+            } text-sm text-white font-semibold py-2 px-6 rounded-full transition`}
         >
           {saving ? "Menyimpan..." : "Simpan & Lanjut"}
         </button>
@@ -356,3 +455,4 @@ export default function FormCompanyDesign({
     </div>
   );
 }
+
