@@ -4,7 +4,7 @@ import { useState } from "react";
 import FormCompany from "@/components/desainperusahaan/FormCompany";
 import FormCompanyDetails from "@/components/desainperusahaan/FormCompanyDetails";
 import FormCompanyDesign from "@/components/desainperusahaan/FormCompanyDesign";
-import FormBaseOrgStruc from "@/components/desainperusahaan/FormBaseOrgStruc";
+import FormCompanyBaseOrgStruc from "@/components/desainperusahaan/FormCompanyBaseOrgStruc";
 import Form5 from "@/components/desainperusahaan/Form5";
 import Form6 from "@/components/desainperusahaan/Form6";
 import Form7 from "@/components/desainperusahaan/Form7";
@@ -36,24 +36,10 @@ export default function DesainPerusahaan() {
                 </>
             )}
             {step === 4 && (
-                <>
-                    <FormBaseOrgStruc />
-                    <div className="flex gap-4 justify-end mt-6">
-                        <button
-                            onClick={() => setStep(3)}
-                            className="bg-green-100 hover:bg-green-300 text-sm text-gray-700 font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Kembali
-                        </button>
-
-                        <button
-                            onClick={() => setStep(5)}
-                            className="bg-green-500 hover:bg-green-700 text-sm text-white font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Simpan & Lanjut
-                        </button>
-                    </div>
-                </>
+                <FormCompanyBaseOrgStruc
+                    onNextStep={() => setStep(5)}
+                    onBack={() => setStep(3)}
+                />
             )}
             {step === 5 && (
                 <>
