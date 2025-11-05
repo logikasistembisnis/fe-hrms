@@ -37,3 +37,16 @@ export interface Tenant {
   holdingflag: boolean | null;
   holdingcompanyid: number | null;
 }
+
+export interface BaseOrgStructure {
+  baseorgstructureid: number;
+  nama: string;
+  ordeno: number;
+}
+
+export interface CompanyBaseOrgStruc {
+  id: number;
+  companyid: number;
+  baseorgstructureid: number;
+  selected: boolean;
+}
