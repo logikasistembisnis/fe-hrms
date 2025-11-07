@@ -50,3 +50,18 @@ export interface CompanyBaseOrgStruc {
   baseorgstructureid: number;
   selected: boolean;
 }
+
+export interface HRBaseRule {
+  hrbaseruleid: number;
+  grouprule: string;
+  rulename: string;
+}
+
+export interface CompanyHRRule {
+  companyhrruleid: number;
+  companyid: number;
+  hrbaseruleid: number;
+  grouprule: string;
+  rulename: string;
+  selected: boolean;
+}
