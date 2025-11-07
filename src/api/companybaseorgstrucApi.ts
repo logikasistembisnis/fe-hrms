@@ -16,7 +16,7 @@ export const getCompanyBaseOrgStruc = async (): Promise<ApiResponse<CompanyBaseO
   return response.data;
 };
 
-// Simpan data umum perusahaan (Form Perusahaan)
+// Simpan data
 export const saveCompanyBaseOrgStruc = async (
   companybaseorgstruc: Partial<CompanyBaseOrgStruc>[]
 ): Promise<ApiResponse<CompanyBaseOrgStruc[]>> => {
