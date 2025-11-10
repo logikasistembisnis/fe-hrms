@@ -359,6 +359,7 @@ export default function FormHRRule({ onNextStep, onBack }: FormHRRuleProps) {
                     Lanjut
                 </button>
             </div>
+            
         </div>
     );
 }
