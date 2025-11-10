@@ -65,3 +65,29 @@ export interface CompanyHRRule {
   rulename: string;
   selected: boolean;
 }
+
+export interface DaftarCuti {
+  daftarcutiid: number;
+  deskripsi: string;
+}
+
+export interface DaftarIzin {
+  daftarizinid: number;
+  deskripsi: string;
+}
+
+export interface CompanyCuti {
+  companycutiid: number;
+  companyid: number;
+  daftarcutiid: number;
+  deskripsi: string;
+  jumlahhari: number;
+}
+
+export interface CompanyIzin {
+  companyizinid: number;
+  companyid: number;
+  daftarizinid: number;
+  deskripsi: string;
+  jumlahhari: number;
+}
