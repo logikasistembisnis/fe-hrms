@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Tenant } from "@/api/data";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export async function getTenant(id: number): Promise<{ data: Tenant }> {
   const res = await axios.get(`${API_BASE}/tenant/${id}`);
