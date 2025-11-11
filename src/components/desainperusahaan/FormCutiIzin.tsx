@@ -322,8 +322,12 @@ export default function FormCutiIzin({ onNextStep, onBack }: FormCutiIzinProps) 
                           onChange={(e) =>
                             handleDeskripsiChange("cuti", idx, e.target.value)
                           }
-                          className="w-full px-2 py-1 text-sm"
+                          className={`w-full px-2 py-1 text-sm ${item.daftarcutiid !== 0
+                            ? "cursor-not-allowed"
+                            : "bg-white"
+                            }`}
                           placeholder="Tulis jenis cuti..."
+                          readOnly={item.daftarcutiid !== 0}
                         />
                       </td>
                       <td className="text-center">
@@ -379,8 +383,12 @@ export default function FormCutiIzin({ onNextStep, onBack }: FormCutiIzinProps) 
                           onChange={(e) =>
                             handleDeskripsiChange("izin", idx, e.target.value)
                           }
-                          className="w-full px-2 py-1 text-sm"
+                          className={`w-full px-2 py-1 text-sm ${item.daftarizinid !== 0
+                              ? "cursor-not-allowed"
+                              : "bg-white"
+                            }`}
                           placeholder="Tulis jenis izin..."
+                          readOnly={item.daftarizinid !== 0}
                         />
                       </td>
                       <td className="text-center">
