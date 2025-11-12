@@ -84,7 +84,7 @@ export default function FormCutiIzin({ onNextStep, onBack }: FormCutiIzinProps) 
           (x) => x.companyid === selected.companyid
         );
 
-        // 🟩 Merge daftar cuti master + data company
+        //  Merge daftar cuti master + data company
         const mergedCuti: CompanyCuti[] = daftarCuti.map((master) => {
           const existing = filteredCuti.find(
             (c) => c.daftarcutiid === master.daftarcutiid
@@ -102,7 +102,7 @@ export default function FormCutiIzin({ onNextStep, onBack }: FormCutiIzinProps) 
         const newCuti = filteredCuti.filter((c) => c.daftarcutiid === 0);
         const finalCuti = [...mergedCuti, ...newCuti];
 
-        // 🟩 Merge daftar izin master + data company
+        //  Merge daftar izin master + data company
         const mergedIzin: CompanyIzin[] = daftarIzin.map((master) => {
           const existing = filteredIzin.find(
             (i) => i.daftarizinid === master.daftarizinid
