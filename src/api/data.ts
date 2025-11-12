@@ -91,3 +91,23 @@ export interface CompanyIzin {
   deskripsi: string;
   jumlahhari: number;
 }
+
+export interface HariLiburNasional {
+  hariliburnasid: number;
+  startdate: string;
+  enddate: string;
+  namatanggal: string;
+  active: boolean;
+}
+
+export interface CompLiburNasional {
+  compliburnasionalid: number;
+  companyid: number;
+  hariliburnasid: number;
+  startdate: string;
+  enddate: string;
+  namatanggal: string;
+  potongcutitahunan: boolean | undefined | null;
+  dokumenfilename: string;
+  dokumen_url?: string | null;
+}
