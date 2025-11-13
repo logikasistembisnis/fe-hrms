@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { getCompanies } from "@/api/companyApi";
-import { getHariLiburNasional, getCompLiburNasional, saveCompLiburNasional } from "@/api/liburnasionalApi";
+import { getHariLiburNasional, getCompLiburNasional, saveCompLiburNasional, deleteCompLiburNasional } from "@/api/liburnasionalApi";
 import { Company, HariLiburNasional, CompLiburNasional } from "@/api/data";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -214,6 +214,19 @@ export default function FormHariLibur({ onNextStep, onBack }: FormHariLiburProps
     }
   };
 
+  // Hapus data compliburnasional
+  const handleDelete = async (id: number) => {
+    if (!confirm("Apakah Anda yakin ingin menghapus data ini?")) return;
+    try {
+      await deleteCompLiburNasional(id);
+      alert("Data berhasil dihapus!");
+      fetchCompLiburNasional();
+    } catch (err) {
+      console.error("Gagal menghapus data:", err);
+      alert("Gagal menghapus data");
+    }
+  };
+
   return (
     <main className="min-h-screen p-6">
       <h1 className="text-2xl font-semibold text-gray-800 mb-6">
@@ -243,7 +256,7 @@ export default function FormHariLibur({ onNextStep, onBack }: FormHariLiburProps
 
       {selectedCompany && (
         <>
-          <div className="flex gap-6">
+          <div className="flex gap-4">
             {/* --- Kolom Input --- */}
             <div className="w-1/4 p-6">
               <h2 className="bg-blue-900 text-white font-semibold text-center py-2 rounded-lg mb-4">
@@ -273,7 +286,7 @@ export default function FormHariLibur({ onNextStep, onBack }: FormHariLiburProps
               </div>
 
               {/* Kalender */}
-              <div className="mt-3">
+              <div className="mt-4">
                 <label className="block mb-2 font-medium text-gray-800">
                   Kalender
                 </label>
@@ -324,7 +337,7 @@ export default function FormHariLibur({ onNextStep, onBack }: FormHariLiburProps
               </div>
 
               {/* Potong Cuti Tahunan */}
-              <div className="mt-3">
+              <div className="mt-4">
                 <label className="block mb-1 font-medium">Potong Cuti Tahunan</label>
                 <select
                   className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -337,7 +350,7 @@ export default function FormHariLibur({ onNextStep, onBack }: FormHariLiburProps
               </div>
 
               {/* Upload Dokumen */}
-              <div className="mt-3">
+              <div className="mt-4">
                 <label className="block mb-1 font-medium">Upload Dokumen</label>
                 <input
                   type="file"
@@ -395,8 +408,9 @@ export default function FormHariLibur({ onNextStep, onBack }: FormHariLiburProps
                   <tr>
                     <th className="px-4 py-2 border-b">Keterangan</th>
                     <th className="px-4 py-2 border-b">Tanggal</th>
-                    <th className="px-4 py-2 border-b">Potong Cuti Tahunan</th>
+                    <th className="px-4 py-2 border-b text-center">Potong Cuti Tahunan</th>
                     <th className="px-4 py-2 border-b">Dokumen</th>
+                    <th className="px-4 py-2 border-b text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -412,7 +426,7 @@ export default function FormHariLibur({ onNextStep, onBack }: FormHariLiburProps
                             ? "Ya"
                             : "Tidak"}
                       </td>
-                      <td className="px-4 py-2 border-b border-gray-200">
+                      <td className="px-4 py-2 border-b border-gray-200 text-center">
                         {item.dokumen_url ? (
                           <a
                             href={item.dokumen_url}
@@ -422,6 +436,18 @@ export default function FormHariLibur({ onNextStep, onBack }: FormHariLiburProps
                           >
                             Lihat Dokumen
                           </a>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td className="px-4 py-2 border-b border-gray-200 text-center">
+                        {item.compliburnasionalid && item.compliburnasionalid !== 0 ? (
+                          <button
+                            onClick={() => handleDelete(item.compliburnasionalid!)}
+                            className="text-red-600 hover:text-red-800 font-semibold cursor-pointer"
+                          >
+                            Hapus
+                          </button>
                         ) : (
                           "-"
                         )}
