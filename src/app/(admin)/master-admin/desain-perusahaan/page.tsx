@@ -8,7 +8,7 @@ import FormCompanyBaseOrgStruc from "@/components/desainperusahaan/FormCompanyBa
 import FormHRRule from "@/components/desainperusahaan/FormHRRule";
 import FormCutiIzin from "@/components/desainperusahaan/FormCutiIzin";
 import FormHariLibur from "@/components/desainperusahaan/FormHariLibur";
-import Form8 from "@/components/desainperusahaan/Form8";
+import FormAturJamKerja from "@/components/desainperusahaan/FormAturJamKerja";
 import Form9 from "@/components/desainperusahaan/Form9";
 import Form10 from "@/components/desainperusahaan/Form10";
 import Form11 from "@/components/desainperusahaan/Form11";
@@ -59,7 +59,7 @@ export default function DesainPerusahaan() {
             )}
             {step === 7 && (
                 <>
-                    <FormHariLibur 
+                    <FormHariLibur
                         onNextStep={() => setStep(8)}
                         onBack={() => setStep(6)}
                     />
@@ -67,7 +67,7 @@ export default function DesainPerusahaan() {
             )}
             {step === 8 && (
                 <>
-                    <Form8 />
+                    <FormAturJamKerja />
                     <div className="flex gap-4 justify-end mt-6">
                         <button
                             onClick={() => setStep(7)}

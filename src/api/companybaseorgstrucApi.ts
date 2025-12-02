@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CompanyBaseOrgStruc } from "./data";
+import { BaseOrgStructure, CompanyBaseOrgStruc } from "./data";
 
 // Tipe standar respons dari backend
 interface ApiResponse<T> {
@@ -10,9 +10,22 @@ interface ApiResponse<T> {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
+export const getBaseOrgStructure = async (): Promise<
+  ApiResponse<BaseOrgStructure[]>
+> => {
+  const response = await axios.get<ApiResponse<BaseOrgStructure[]>>(
+    `${API_BASE}/baseorgstructure`
+  );
+  return response.data;
+};
+
 // Ambil semua data perusahaan
-export const getCompanyBaseOrgStruc = async (): Promise<ApiResponse<CompanyBaseOrgStruc[]>> => {
-  const response = await axios.get<ApiResponse<CompanyBaseOrgStruc[]>>(`${API_BASE}/companybaseorgstruc`);
+export const getCompanyBaseOrgStruc = async (): Promise<
+  ApiResponse<CompanyBaseOrgStruc[]>
+> => {
+  const response = await axios.get<ApiResponse<CompanyBaseOrgStruc[]>>(
+    `${API_BASE}/companybaseorgstruc`
+  );
   return response.data;
 };
 

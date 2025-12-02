@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getCompanies } from "@/api/companyApi";
-import { getHRBaseRule } from "@/api/hrbaseruleApi";
 import { Company, HRBaseRule, CompanyHRRule } from "@/api/data";
-import { getCompanyHRRule, saveCompanyHRRule } from "@/api/companyhrruleApi";
+import { getHRBaseRule, getCompanyHRRule, saveCompanyHRRule } from "@/api/companyhrruleApi";
 
 interface FormHRRuleProps {
     onNextStep: () => void;
@@ -359,7 +358,7 @@ export default function FormHRRule({ onNextStep, onBack }: FormHRRuleProps) {
                     Lanjut
                 </button>
             </div>
-            
+
         </div>
     );
 }

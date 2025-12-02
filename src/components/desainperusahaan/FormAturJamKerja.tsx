@@ -1,6 +1,6 @@
 "use client";
 
-export default function Form8() {
+export default function FormAturJamKerja() {
   const dataJamKerja = [
     {
       tipe: "Shift",
@@ -57,9 +57,8 @@ export default function Form8() {
             {dataJamKerja.map((row, idx) => (
               <tr
                 key={idx}
-                className={`text-center ${
-                  idx % 2 === 0 ? "bg-gray-50" : "bg-white"
-                }`}
+                className={`text-center ${idx % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  }`}
               >
                 <td className="px-4 py-2 font-medium">{row.tipe}</td>
                 <td className="px-4 py-2">{row.kategori}</td>

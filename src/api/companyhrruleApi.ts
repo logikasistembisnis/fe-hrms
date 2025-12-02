@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CompanyHRRule } from "./data";
+import { HRBaseRule, CompanyHRRule } from "./data";
 
 // Tipe standar respons dari backend
 interface ApiResponse<T> {
@@ -9,6 +9,11 @@ interface ApiResponse<T> {
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
+export const getHRBaseRule = async (): Promise<ApiResponse<HRBaseRule[]>> => {
+  const response = await axios.get<ApiResponse<HRBaseRule[]>>(`${API_BASE}/hrbaserule`);
+  return response.data;
+};
 
 // Ambil semua data 
 export const getCompanyHRRule = async (): Promise<ApiResponse<CompanyHRRule[]>> => {

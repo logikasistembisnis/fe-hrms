@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getCompanies } from "@/api/companyApi";
-import { getBaseOrgStructure } from "@/api/baseorgstructureApi";
-import { getCompanyBaseOrgStruc, saveCompanyBaseOrgStruc } from "@/api/companybaseorgstrucApi";
+import { getBaseOrgStructure, getCompanyBaseOrgStruc, saveCompanyBaseOrgStruc } from "@/api/companybaseorgstrucApi";
 import { Company, BaseOrgStructure, CompanyBaseOrgStruc } from "@/api/data";
 
 interface FormCompanyBaseOrgProps {
