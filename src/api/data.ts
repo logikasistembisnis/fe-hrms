@@ -111,3 +111,23 @@ export interface CompLiburNasional {
   dokumenfilename: string;
   dokumen_url?: string | null;
 }
+
+export interface WorkingHours {
+  companyworkinghoursid: number;
+  companyid: number;
+  tipejadwal: string;
+  kategori: string;
+  skema: string;
+  durasi: number;
+  durasiistirahat: number;
+  jammasuk: string;
+  jamkeluar: string;
+  kodeshift: string;
+}
+
+export interface WorkingBreak {
+  id: number;
+  companyworkinghoursid: number;
+  starttime: string;
+  endtime: string;
+}
