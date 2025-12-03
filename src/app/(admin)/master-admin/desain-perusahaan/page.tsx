@@ -67,22 +67,10 @@ export default function DesainPerusahaan() {
             )}
             {step === 8 && (
                 <>
-                    <FormAturJamKerja />
-                    <div className="flex gap-4 justify-end mt-6">
-                        <button
-                            onClick={() => setStep(7)}
-                            className="bg-green-100 hover:bg-green-300 text-sm text-gray-700 font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Kembali
-                        </button>
-
-                        <button
-                            onClick={() => setStep(9)}
-                            className="bg-green-500 hover:bg-green-700 text-sm text-white font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Simpan & Lanjut
-                        </button>
-                    </div>
+                    <FormAturJamKerja
+                        onNextStep={() => setStep(9)}
+                        onBack={() => setStep(7)}
+                    />
                 </>
             )}
             {step === 9 && (
