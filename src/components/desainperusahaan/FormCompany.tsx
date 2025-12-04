@@ -1,4 +1,3 @@
-// FormCompany.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -157,7 +156,7 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
     try {
       setLoading(true);
 
-      // 1. Buat Payload
+      // Buat Payload
       const payload = allCompanies.map((company) => {
         const countryObj = countries.find((ct) => ct.name === company.country?.name);
         return {
@@ -186,10 +185,7 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
       // Extract Company[] dari dalam results -> item.data
       const savedCompanies: Company[] = (backendData.results || []).map(item => item.data);
 
-      console.log("Extracted Companies:", savedCompanies);
-      // -------------------------------
-
-      // 2. Tentukan Holding ID yang Benar
+      // Tentukan Holding ID yang Benar
       let finalHoldingCompanyId: number | null = null;
 
       if (hasHolding === "Ya") {
@@ -220,7 +216,7 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
         }
       }
 
-      // 3. Simpan Data Tenant
+      // Simpan Data Tenant
       const tenantPayload: Partial<Tenant> = {
         holdingflag: hasHolding === "Ya",
         holdingcompanyid: finalHoldingCompanyId,
@@ -307,7 +303,19 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
         <div>
           <p className="font-medium mb-3">2. Apakah perusahaan anda memiliki holding company?</p>
 
-          <select className="border p-2 rounded-md w-full mb-4" value={hasHolding} onChange={(e) => setHasHolding(e.target.value)}>
+          <select className="border p-2 rounded-md w-full mb-4"
+            value={hasHolding}
+            onChange={(e) => {
+              const newVal = e.target.value;
+              setHasHolding(newVal);
+              if (newVal === "Tidak" || newVal === "") {
+                setTenant((prev) => ({
+                  ...(prev ?? { tenantid: 1, name: "", holdingflag: null, holdingcompanyid: null }),
+                  holdingcompanyid: null, // Reset dropdown ke "Pilih Perusahaan"
+                }));
+              }
+            }}
+          >
             <option value="">Pilih</option>
             <option value="Ya">Ya</option>
             <option value="Tidak">Tidak</option>

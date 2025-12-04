@@ -199,7 +199,6 @@ function CompanyChart({ companies }: { companies: DesignCompany[] }) {
   );
 }
 
-// --- Komponen Form Utama (Tidak Berubah) ---
 export default function FormCompanyDesign({
   onNextStep,
   onBack,
