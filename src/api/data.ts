@@ -23,12 +23,7 @@ export interface Company {
   reporttocompany?: {
     name: string;
   } | null;
-}
-
-export interface CompanyDesign {
-  companydesignid: number;
-  name: string;
-  level: number;
+  tenantid?: number;
 }
 
 export interface Tenant {
@@ -36,6 +31,12 @@ export interface Tenant {
   name: string;
   holdingflag: boolean | null;
   holdingcompanyid: number | null;
+}
+
+export interface CompanyDesign {
+  companydesignid: number;
+  name: string;
+  level: number;
 }
 
 export interface BaseOrgStructure {
