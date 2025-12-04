@@ -68,6 +68,9 @@ export default function FormAturJamKerja({ onNextStep, onBack }: FormAturJamKerj
   const [isSaving, setIsSaving] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
+  // State untuk Validasi Error di Modal
+  const [validationMsg, setValidationMsg] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     tipejadwal: "Shift",
     kategori: "Pagi",
@@ -144,6 +147,7 @@ export default function FormAturJamKerja({ onNextStep, onBack }: FormAturJamKerj
       return;
     }
     setEditingId(null);
+    setValidationMsg(null); // Reset pesan error
     setFormData({
       tipejadwal: filterTipe || "Shift",
       kategori: filterKategori || "Pagi",
@@ -160,6 +164,7 @@ export default function FormAturJamKerja({ onNextStep, onBack }: FormAturJamKerj
 
   const openEditModal = (row: WorkingDataDisplay) => {
     setEditingId(row.companyworkinghoursid);
+    setValidationMsg(null); // Reset pesan error
     setFormData({
       tipejadwal: row.tipejadwal,
       kategori: row.kategori,
@@ -200,10 +205,39 @@ export default function FormAturJamKerja({ onNextStep, onBack }: FormAturJamKerj
   // --- SUBMIT HANDLER ---
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationMsg(null);
 
     if (!selectedCompanyId) {
       alert("Perusahaan belum dipilih.");
       console.groupEnd();
+      return;
+    }
+
+    // Cek Dropdown (Tipe, Kategori, Skema)
+    if (!formData.tipejadwal || !formData.kategori || !formData.skema) {
+      setValidationMsg("Tipe Jadwal, Kategori, dan Skema wajib dipilih.");
+      return;
+    }
+
+    // Cek Kode Shift (Wajib diisi & tidak spasi kosong)
+    if (!formData.kodeshift || formData.kodeshift.trim() === "") {
+      setValidationMsg("Kode Shift wajib diisi.");
+      return;
+    }
+
+    // Cek Jam (Masuk & Keluar)
+    if (!formData.jammasuk || !formData.jamkeluar) {
+      setValidationMsg("Jam Masuk dan Jam Keluar wajib diisi.");
+      return;
+    }
+
+    // Cek Durasi (Tidak boleh kosong atau minus)
+    if (formData.durasi === undefined || Number(formData.durasi) <= 0) {
+      setValidationMsg("Durasi Kerja wajib diisi dan harus lebih dari 0.");
+      return;
+    }
+    if (formData.durasiistirahat === undefined || Number(formData.durasiistirahat) < 0) {
+      setValidationMsg("Durasi Istirahat wajib diisi (boleh 0).");
       return;
     }
 
@@ -457,7 +491,7 @@ export default function FormAturJamKerja({ onNextStep, onBack }: FormAturJamKerj
               <button
                 onClick={openCreateModal}
                 disabled={!selectedCompanyId || isSaving}
-                className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md text-sm font-medium shadow disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md text-sm font-medium shadow disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 + Tambah Jadwal
               </button>
@@ -565,6 +599,13 @@ export default function FormAturJamKerja({ onNextStep, onBack }: FormAturJamKerj
                 )}
               </div>
             </div>
+
+            {/* ERROR ALERT BOX */}
+            {validationMsg && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+                <strong>Perhatian:</strong> {validationMsg}
+              </div>
+            )}
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
               {/* Row 1: Tipe & Kategori */}
@@ -725,14 +766,14 @@ export default function FormAturJamKerja({ onNextStep, onBack }: FormAturJamKerj
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
+                  className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded cursor-pointer"
                   disabled={isSaving}
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm bg-blue-900 text-white rounded hover:bg-blue-800"
+                  className="px-4 py-2 text-sm bg-blue-900 text-white rounded hover:bg-blue-800 cursor-pointer"
                   disabled={isSaving}
                 >
                   {isSaving ? "Menyimpan..." : "Simpan Jadwal"}
