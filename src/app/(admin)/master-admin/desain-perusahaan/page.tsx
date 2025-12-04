@@ -9,7 +9,7 @@ import FormHRRule from "@/components/desainperusahaan/FormHRRule";
 import FormCutiIzin from "@/components/desainperusahaan/FormCutiIzin";
 import FormHariLibur from "@/components/desainperusahaan/FormHariLibur";
 import FormAturJamKerja from "@/components/desainperusahaan/FormAturJamKerja";
-import Form9 from "@/components/desainperusahaan/Form9";
+import FormSG from "@/components/desainperusahaan/FormSG";
 import Form10 from "@/components/desainperusahaan/Form10";
 import Form11 from "@/components/desainperusahaan/Form11";
 import Form12 from "@/components/desainperusahaan/Form12";
@@ -75,22 +75,9 @@ export default function DesainPerusahaan() {
             )}
             {step === 9 && (
                 <>
-                    <Form9 />
-                    <div className="flex gap-4 justify-end mt-6">
-                        <button
-                            onClick={() => setStep(8)}
-                            className="bg-green-100 hover:bg-green-300 text-sm text-gray-700 font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Kembali
-                        </button>
-
-                        <button
-                            onClick={() => setStep(10)}
-                            className="bg-green-500 hover:bg-green-700 text-sm text-white font-semibold py-2 px-6 rounded-full transition"
-                        >
-                            Simpan & Lanjut
-                        </button>
-                    </div>
+                    <FormSG
+                        onNextStep={() => setStep(10)}
+                        onBack={() => setStep(8)} />
                 </>
             )}
             {step === 10 && (

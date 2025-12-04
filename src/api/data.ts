@@ -131,3 +131,23 @@ export interface WorkingBreak {
   starttime: string;
   endtime: string;
 }
+
+export interface Menu {
+  menuid: number;
+	companyid: number;
+	menuname: string;
+	parentmenuid: number;
+	ordersequence?: number;
+	menutype?: string;
+	hrgroup: boolean;
+	grouprole: string;
+  grouprole_ids?: number[];
+	active: boolean;
+}
+
+export interface GroupRole {
+  grouproleid: number;
+	grouprolecode: string;
+	grouprolename: string;
+	active: boolean;
+}
