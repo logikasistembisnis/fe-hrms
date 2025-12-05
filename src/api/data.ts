@@ -152,3 +152,40 @@ export interface GroupRole {
 	grouprolename: string;
 	active: boolean;
 }
+
+export interface CompanyDirectorate {
+  companydirectorateid: number;
+  companyid: number;
+  directoratename: string;
+  active: boolean;
+  divisions: CompanyDivision[];
+}
+
+export interface CompanyDivision {
+  companydivisionid: number;
+  companydirectorateid: number;
+  companyid: number;
+  divisionname: string;
+  active: boolean;
+  departments: CompanyDepartment[];
+}
+
+export interface CompanyDepartment {
+  companydepartmentid: number;
+  companydivisionid: number;
+  companyid: number;
+  departmentname: string;
+  active: boolean;
+  unit_kerjas: CompanyUnitKerja[];
+}
+
+export interface CompanyUnitKerja {
+  companyunitkerjaid: number;
+  companydepartmentid: number;
+  companyid: number;
+  unitkerjaname: string;
+  dokumenname?: string | null;
+  dokumenfilename?: string | null;
+  dokumen_url?: string | null;
+  active: boolean;
+}
