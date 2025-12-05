@@ -1,0 +1,14 @@
+{
+  "/(admin)/home/page": "/home",
+  "/(admin)/master-admin/desain-perusahaan/page": "/master-admin/desain-perusahaan",
+  "/(admin)/master-admin/page": "/master-admin",
+  "/(user)/employee-self-service/page": "/employee-self-service",
+  "/(user)/employee-self-service/personal-information/page": "/employee-self-service/personal-information",
+  "/(user)/employee-self-service/time-and-attendance/cuti-ijin/page": "/employee-self-service/time-and-attendance/cuti-ijin",
+  "/(user)/employee-self-service/time-and-attendance/data-kehadiran/page": "/employee-self-service/time-and-attendance/data-kehadiran",
+  "/(user)/employee-self-service/time-and-attendance/page": "/employee-self-service/time-and-attendance",
+  "/_not-found/page": "/_not-found",
+  "/favicon.ico/route": "/favicon.ico",
+  "/page": "/",
+  "/sign-up/page": "/sign-up"
+}
