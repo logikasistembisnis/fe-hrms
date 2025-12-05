@@ -127,6 +127,7 @@ const getLayoutedElements = (
 function CompanyChart({ companies }: { companies: DesignCompany[] }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const nodeTypes = useMemo(() => ({}), []); 
 
   useEffect(() => {
     // 1. Filter perusahaan yang memiliki desain
@@ -190,6 +191,7 @@ function CompanyChart({ companies }: { companies: DesignCompany[] }) {
       edges={edges}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
+      nodeTypes={nodeTypes}
       fitView // Otomatis zoom & pan agar semua node terlihat
       nodesDraggable={true} // Node bisa digeser
     >
