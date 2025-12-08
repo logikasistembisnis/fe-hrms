@@ -9,7 +9,16 @@ interface ApiResponse<T> {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export const getTenant = async (id: number): Promise<
+export const getTenant = async (): Promise<
+  ApiResponse<Tenant[]>
+> => {
+  const response = await axios.get<ApiResponse<Tenant[]>>(
+    `${API_BASE}/tenant`
+  );
+  return response.data;
+};
+
+export const getTenantbyid = async (id: number): Promise<
   ApiResponse<Tenant>
 > => {
   const response = await axios.get<ApiResponse<Tenant>>(

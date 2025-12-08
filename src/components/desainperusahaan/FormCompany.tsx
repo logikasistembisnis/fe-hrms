@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Company, Country, Tenant } from "@/api/data";
 import { getCompanies, saveCompany, deleteCompany } from "@/api/companyApi";
 import { getCountries } from "@/api/countryApi";
-import { getTenant, saveTenant } from "@/api/tenantApi";
+import { getTenantbyid, saveTenant } from "@/api/tenantApi";
 
 interface FormPerusahaanProps {
   onNextStep: () => void;
@@ -42,7 +42,7 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
         const results = await Promise.allSettled([
           getCompanies(),
           getCountries(),
-          getTenant(1),
+          getTenantbyid(1),
         ]);
         const [companyRes, countryRes, tenantRes] = results;
 
