@@ -35,15 +35,6 @@ interface AutocompleteProps<T> {
   disabled?: boolean;
 }
 
-interface NonActivePayload {
-  companyid: number;
-  active: boolean;
-  companyunitkerjaid?: number;
-  companydepartmentid?: number;
-  companydivisionid?: number;
-  companydirectorateid?: number;
-}
-
 // Kita gunakan function declaration agar Generic <T> lebih aman di parsing TSX
 function AutocompleteInput<T>({
   label,
@@ -390,7 +381,7 @@ export default function FormOrganization({ onNextStep, onBack }: FormOrganizatio
     if (!selectedCompanyId) return;
 
     // 1. Konfirmasi
-    const isConfirmed = window.confirm("Apakah Anda yakin ingin menonaktifkan data ini? Data tidak akan tampil lagi.");
+    const isConfirmed = window.confirm("Apakah Anda yakin ingin menonaktifkan data ini?");
     if (!isConfirmed) return;
 
     try {

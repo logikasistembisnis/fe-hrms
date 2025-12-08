@@ -4,18 +4,30 @@ import { useState, useEffect } from "react";
 import { Company, Country, Tenant } from "@/api/data";
 import { getCompanies, saveCompany, deleteCompany } from "@/api/companyApi";
 import { getCountries } from "@/api/countryApi";
-import { getTenant, updateTenant } from "@/api/tenantApi";
+import { getTenant, saveTenant } from "@/api/tenantApi";
 
 interface FormPerusahaanProps {
   onNextStep: () => void;
 }
 
+// Default value
+const defaultTenant: Tenant = {
+  tenantid: 1,
+  name: "",
+  description: null,
+  holdingflag: null,
+  holdingcompanyid: null,
+  active: true,
+};
+
 export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
   const [companiesFromAPI, setCompaniesFromAPI] = useState<Company[]>([]);
   const [localCompanies, setLocalCompanies] = useState<Company[]>([]);
   const [countries, setCountries] = useState<Country[]>([]);
+  
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [hasHolding, setHasHolding] = useState<string>("");
+  
   const [loading, setLoading] = useState(false);
   const [dataloading, setDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,9 +39,14 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
       setError(null);
 
       try {
-        const results = await Promise.allSettled([getCompanies(), getCountries(), getTenant(1)]);
+        const results = await Promise.allSettled([
+          getCompanies(),
+          getCountries(),
+          getTenant(1),
+        ]);
         const [companyRes, countryRes, tenantRes] = results;
 
+        // 1. Handle Companies
         let companies: Company[] = [];
         if (companyRes.status === "fulfilled" && companyRes.value?.data) {
           companies = (companyRes.value.data || []).sort((a, b) => b.companyid - a.companyid);
@@ -40,6 +57,7 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
         setCompaniesFromAPI(companies);
         localStorage.setItem("companiesFromAPI", JSON.stringify(companies));
 
+        // 2. Handle Countries
         let countryList: Country[] = [];
         if (countryRes.status === "fulfilled" && countryRes.value?.data) {
           countryList = countryRes.value.data || [];
@@ -49,11 +67,23 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
         }
         setCountries(countryList);
 
+        // 3. Handle Tenant (PERBAIKAN UTAMA DISINI)
         if (tenantRes.status === "fulfilled" && tenantRes.value?.data) {
+          // Backend return OBJECT, bukan ARRAY
           const t: Tenant = tenantRes.value.data;
-          setTenant(t);
-          setHasHolding(t.holdingflag === true ? "Ya" : t.holdingflag === false ? "Tidak" : "");
+          
+          if (t) {
+             setTenant(t);
+             // Set dropdown logic
+             setHasHolding(
+               t.holdingflag === true ? "Ya" : t.holdingflag === false ? "Tidak" : ""
+             );
+          } else {
+             setTenant(null);
+             setHasHolding("");
+          }
         } else {
+          // Jika request gagal atau data kosong
           setTenant(null);
           setHasHolding("");
         }
@@ -74,9 +104,9 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
     fetchData();
   }, []);
 
+  // --- FUNGSI LAIN TIDAK BERUBAH ---
   const handleDelete = async (id: number, source: "api" | "local") => {
     if (!confirm("Apakah Anda yakin ingin menghapus perusahaan ini?")) return;
-
     try {
       if (source === "api") {
         await deleteCompany(id);
@@ -118,30 +148,22 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
 
   const allCompanies = [...localCompanies, ...companiesFromAPI];
 
-  if (dataloading) return <p className="p-6">Loading data perusahaan...</p>;
-  if (error) return <p className="p-6 text-red-500">{error}</p>;
-
   const validateBeforeSubmit = (): boolean => {
     const errs: string[] = [];
-
     if (allCompanies.length === 0) {
       errs.push("Anda harus menambahkan minimal satu perusahaan (PT).");
     }
-
     allCompanies.forEach((c, idx) => {
       if (!c.name || c.name.trim() === "") errs.push(`Nama perusahaan (PT) pada baris ${idx + 1} wajib diisi.`);
       if (!c.country?.name || c.country.name.trim() === "") errs.push(`Negara perusahaan pada baris ${idx + 1} wajib dipilih.`);
     });
-
     if (hasHolding === "") errs.push("Silakan pilih apakah perusahaan memiliki holding company (Ya/Tidak).");
-
     if (hasHolding === "Ya") {
       const selected = tenant?.holdingcompanyid;
       if (selected == null || selected === 0) {
         errs.push("Anda memilih 'Ya' untuk holding — wajib pilih nama perusahaan holding.");
       }
     }
-
     setValidationErrors(errs);
     return errs.length === 0;
   };
@@ -156,7 +178,7 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
     try {
       setLoading(true);
 
-      // Buat Payload
+      // Logic Save Company
       const payload = allCompanies.map((company) => {
         const countryObj = countries.find((ct) => ct.name === company.country?.name);
         return {
@@ -167,48 +189,29 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
         };
       });
 
-      // Interface lokal untuk mapping struktur JSON Postman
-      interface BackendResultItem {
-        status: string;
-        data: Company;
-      }
-      interface BackendResponse {
-        results: BackendResultItem[];
-      }
+      interface BackendResultItem { status: string; data: Company; }
+      interface BackendResponse { results: BackendResultItem[]; }
 
-      // Kirim data
       const rawResponse = await saveCompany(payload as unknown as Partial<Company>[]);
-
-      // Cast respons ke tipe struktur Backend yang benar
       const backendData = rawResponse as unknown as BackendResponse;
-
-      // Extract Company[] dari dalam results -> item.data
       const savedCompanies: Company[] = (backendData.results || []).map(item => item.data);
 
-      // Tentukan Holding ID yang Benar
+      // Logic ID Holding
       let finalHoldingCompanyId: number | null = null;
-
       if (hasHolding === "Ya") {
         const selectedTempId = tenant?.holdingcompanyid ?? null;
-
         if (selectedTempId) {
           if (selectedTempId > 0) {
-            // Kasus A: ID Lama (Positif)
             finalHoldingCompanyId = selectedTempId;
           } else {
-            // Kasus B: ID Baru (Negatif)
             const tempCompanyData = allCompanies.find(c => c.companyid === selectedTempId);
-
             if (tempCompanyData) {
-              // Cari di array yang sudah di-extract (savedCompanies)
               const matchedSavedCompany = savedCompanies.find(
                 (sc) => sc.name.trim().toLowerCase() === tempCompanyData.name.trim().toLowerCase()
               );
-
               if (matchedSavedCompany) {
                 finalHoldingCompanyId = matchedSavedCompany.companyid;
               } else {
-                console.error("Gagal match ID. Data Lokal:", tempCompanyData.name, "Data Server Extracted:", savedCompanies);
                 throw new Error(`Gagal menyimpan holding: Perusahaan '${tempCompanyData.name}' tidak ditemukan di respon server.`);
               }
             }
@@ -216,14 +219,19 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
         }
       }
 
-      // Simpan Data Tenant
+      const currentTenantData = tenant ?? defaultTenant;
+
+      // Logic Save Tenant (Upsert via Array)
       const tenantPayload: Partial<Tenant> = {
+        ...currentTenantData,
+        tenantid: 1,
         holdingflag: hasHolding === "Ya",
         holdingcompanyid: finalHoldingCompanyId,
+        active: true,
       };
 
       try {
-        await updateTenant(1, tenantPayload);
+        await saveTenant([tenantPayload]);
       } catch (tenantErr) {
         console.error("Gagal update tenant:", tenantErr);
         throw new Error("Data perusahaan tersimpan, tetapi gagal update status holding.");
@@ -231,14 +239,12 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
 
       alert("Data perusahaan dan tenant berhasil disimpan!");
 
-      // Update state & Cleanup
       const serverCompanies = savedCompanies
         .filter((c) => c && c.companyid > 0)
         .sort((a, b) => b.companyid - a.companyid);
 
       setCompaniesFromAPI(serverCompanies);
       localStorage.setItem("companiesFromAPI", JSON.stringify(serverCompanies));
-
       setLocalCompanies([]);
       localStorage.removeItem("localCompanies");
 
@@ -251,32 +257,29 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
     }
   };
 
+  if (dataloading) return <p className="p-6">Loading data perusahaan...</p>;
+  if (error) return <p className="p-6 text-red-500">{error}</p>;
+
   return (
     <div>
       {validationErrors.length > 0 && (
         <div className="p-4 mb-4 bg-red-50 border border-red-200 rounded">
           <strong className="text-red-700">Perbaiki kesalahan berikut:</strong>
           <ul className="mt-2 list-disc list-inside text-sm text-red-600">
-            {validationErrors.map((v, i) => (
-              <li key={i}>{v}</li>
-            ))}
+            {validationErrors.map((v, i) => <li key={i}>{v}</li>)}
           </ul>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+        {/* FORM PERUSAHAAN SAMA SAJA */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Informasi Perusahaan</h2>
           <p className="font-medium text-lg mb-3">1. Sebutkan nama perusahaan dan negara tempat beroperasi</p>
-
-          <button onClick={handleAdd} className="flex items-center gap-2 mb-4 px-4 py-2 bg-[#0c356a] text-white rounded-full cursor-pointer">
-            Tambah
-          </button>
-
+          <button onClick={handleAdd} className="flex items-center gap-2 mb-4 px-4 py-2 bg-[#0c356a] text-white rounded-full cursor-pointer">Tambah</button>
+          
           <div className="space-y-3">
-            {localCompanies.length === 0 && companiesFromAPI.length === 0 && <p className="text-sm text-gray-500">Belum ada data perusahaan. Klik Tambah untuk menambahkan.</p>}
-
-            {localCompanies.map((company) => (
+             {localCompanies.map((company) => (
               <div key={company.companyid} className="flex flex-wrap items-center gap-2">
                 <input type="text" placeholder="Nama perusahaan" value={company.name} onChange={(e) => handleLocalChange(company.companyid, "name", e.target.value)} className="py-2 px-3 flex-1 min-w-[150px] bg-gray-100 rounded-lg" />
                 <select value={company.country?.name || ""} onChange={(e) => handleLocalChange(company.companyid, "country", e.target.value)} className="py-2 px-3 flex-1 min-w-[180px] bg-gray-100 rounded-lg">
@@ -286,7 +289,6 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
                 <button onClick={() => handleDelete(company.companyid, "local")} className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-800">Hapus</button>
               </div>
             ))}
-
             {companiesFromAPI.map((company) => (
               <div key={company.companyid} className="flex flex-wrap items-center gap-2">
                 <input type="text" value={company.name || ""} onChange={(e) => handleAPIChange(company.companyid, "name", e.target.value)} className="py-2 px-3 flex-1 min-w-[150px] bg-gray-100 rounded-lg" />
@@ -300,20 +302,23 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
           </div>
         </div>
 
+        {/* FORM HOLDING (DROPDOWN) */}
         <div>
           <p className="font-medium mb-3">2. Apakah perusahaan anda memiliki holding company?</p>
-
-          <select className="border p-2 rounded-md w-full mb-4"
+          <select 
+            className="border p-2 rounded-md w-full mb-4"
             value={hasHolding}
             onChange={(e) => {
               const newVal = e.target.value;
               setHasHolding(newVal);
-              if (newVal === "Tidak" || newVal === "") {
-                setTenant((prev) => ({
-                  ...(prev ?? { tenantid: 1, name: "", holdingflag: null, holdingcompanyid: null }),
-                  holdingcompanyid: null, // Reset dropdown ke "Pilih Perusahaan"
-                }));
-              }
+              setTenant((prev) => {
+                 const current = prev ?? defaultTenant;
+                 if (newVal === "Tidak" || newVal === "") {
+                    return { ...current, holdingflag: false, holdingcompanyid: null };
+                 } else {
+                    return { ...current, holdingflag: true };
+                 }
+              });
             }}
           >
             <option value="">Pilih</option>
@@ -325,15 +330,20 @@ export default function FormCompany({ onNextStep }: FormPerusahaanProps) {
           <select
             className="border p-2 rounded-md w-full"
             disabled={hasHolding === "Tidak" || hasHolding === ""}
-            value={tenant?.holdingcompanyid ?? ""}
+            // Tetap gunakan String() agar ID 2 (number) cocok dengan "2" (value option)
+            value={tenant?.holdingcompanyid ? String(tenant.holdingcompanyid) : ""}
             onChange={(e) => {
               const val = e.target.value === "" ? null : Number(e.target.value);
-              setTenant((prev) => ({ ...(prev ?? { tenantid: 1, name: "", holdingflag: null, holdingcompanyid: null }), holdingcompanyid: val }));
+              setTenant((prev) => ({
+                ...(prev ?? defaultTenant),
+                holdingcompanyid: val,
+              }));
             }}
           >
             <option value="">Pilih Perusahaan</option>
             {allCompanies.map((c) => (
-              <option key={c.companyid} value={c.companyid}>
+              // Tetap gunakan String()
+              <option key={c.companyid} value={String(c.companyid)}>
                 {c.name || " (Belum diisi)"}
               </option>
             ))}

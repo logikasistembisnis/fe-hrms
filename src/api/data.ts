@@ -29,8 +29,10 @@ export interface Company {
 export interface Tenant {
   tenantid: number;
   name: string;
+  description: string | null;
   holdingflag: boolean | null;
   holdingcompanyid: number | null;
+  active: boolean | null;
 }
 
 export interface CompanyDesign {
