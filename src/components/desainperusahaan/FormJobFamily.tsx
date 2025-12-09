@@ -5,6 +5,11 @@ import { getCompanies } from "@/api/companyApi";
 import { getJobFamily, saveJobFamily, saveNonactive } from "@/api/jobfamilyApi";
 import { Company, CompanyJobFamily, CompanySubFamily } from "@/api/data";
 
+interface FormJobFamilyProps {
+  onNextStep: () => void;
+  onBack: () => void;
+}
+
 // --- 1. TYPE DEFINITIONS & GENERIC COMPONENT ---
 
 // Tipe Generic untuk opsi dropdown
@@ -86,7 +91,7 @@ function AutocompleteInput<T>({
   );
 }
 
-export default function FormJobFamily() {
+export default function FormJobFamily({ onNextStep, onBack }: FormJobFamilyProps) {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | "">("");
   const [loadingCompanies, setLoadingCompanies] = useState(true);
@@ -460,6 +465,20 @@ export default function FormJobFamily() {
             </table>
           </div>
         </div>
+      </div>
+      <div className="flex justify-end gap-4 mt-6">
+        <button
+          onClick={onBack}
+          className="bg-gray-200 hover:bg-gray-300 text-sm text-gray-700 font-semibold py-2 px-6 rounded-full"
+        >
+          Kembali
+        </button>
+        <button
+          onClick={onNextStep}
+          className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-semibold py-2 px-6 rounded-full"
+        >
+          Lanjut
+        </button>
       </div>
     </div>
   );
