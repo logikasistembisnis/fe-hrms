@@ -1,1 +1,119 @@
-{"version":3,"caseSensitive":false,"basePath":"","rewrites":{"beforeFiles":[],"afterFiles":[],"fallback":[]},"redirects":[{"source":"/:path+/","destination":"/:path+","permanent":true,"internal":true,"regex":"^(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))\\/$"}],"headers":[]}
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/employee-self-service",
+      "regex": "^/employee\\-self\\-service(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/employee\\-self\\-service(?:/)?$"
+    },
+    {
+      "page": "/employee-self-service/personal-information",
+      "regex": "^/employee\\-self\\-service/personal\\-information(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/employee\\-self\\-service/personal\\-information(?:/)?$"
+    },
+    {
+      "page": "/employee-self-service/time-and-attendance",
+      "regex": "^/employee\\-self\\-service/time\\-and\\-attendance(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/employee\\-self\\-service/time\\-and\\-attendance(?:/)?$"
+    },
+    {
+      "page": "/employee-self-service/time-and-attendance/cuti-ijin",
+      "regex": "^/employee\\-self\\-service/time\\-and\\-attendance/cuti\\-ijin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/employee\\-self\\-service/time\\-and\\-attendance/cuti\\-ijin(?:/)?$"
+    },
+    {
+      "page": "/employee-self-service/time-and-attendance/data-kehadiran",
+      "regex": "^/employee\\-self\\-service/time\\-and\\-attendance/data\\-kehadiran(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/employee\\-self\\-service/time\\-and\\-attendance/data\\-kehadiran(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/home",
+      "regex": "^/home(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/home(?:/)?$"
+    },
+    {
+      "page": "/master-admin",
+      "regex": "^/master\\-admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/master\\-admin(?:/)?$"
+    },
+    {
+      "page": "/master-admin/desain-perusahaan",
+      "regex": "^/master\\-admin/desain\\-perusahaan(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/master\\-admin/desain\\-perusahaan(?:/)?$"
+    },
+    {
+      "page": "/sign-up",
+      "regex": "^/sign\\-up(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sign\\-up(?:/)?$"
+    },
+    {
+      "page": "/tenant",
+      "regex": "^/tenant(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tenant(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

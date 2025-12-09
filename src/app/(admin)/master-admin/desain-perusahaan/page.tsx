@@ -11,7 +11,7 @@ import FormHariLibur from "@/components/desainperusahaan/FormHariLibur";
 import FormAturJamKerja from "@/components/desainperusahaan/FormAturJamKerja";
 import FormSG from "@/components/desainperusahaan/FormSG";
 import FormOrganization from "@/components/desainperusahaan/FormOrganization";
-import Form11 from "@/components/desainperusahaan/Form11";
+import FormJobFamily from "@/components/desainperusahaan/FormJobFamily";
 import Form12 from "@/components/desainperusahaan/Form12";
 import Form13 from "@/components/desainperusahaan/Form13";
 
@@ -89,7 +89,7 @@ export default function DesainPerusahaan() {
             )}
             {step === 11 && (
                 <>
-                    <Form11 />
+                    <FormJobFamily />
                     <div className="flex gap-4 justify-end mt-6">
                         <button
                             onClick={() => setStep(10)}

@@ -191,3 +191,24 @@ export interface CompanyUnitKerja {
   dokumen_url?: string | null;
   active: boolean;
 }
+
+export interface CompanyJobFamily {
+  companyjobfamilyid: number;
+  companyid: number;
+  jobfamilyname: string;
+  jobfamilycode: string;
+  active: boolean;
+  subfamily: CompanySubFamily[];
+}
+
+export interface CompanySubFamily {
+  companysubfamilyid: number;
+  companyjobfamilyid: number;
+  companyid: number;
+  subfamilyname: string;
+  subfamilycode: string;
+  dokumenname?: string | null;
+  dokumenfilename?: string | null;
+  dokumen_url?: string | null;
+  active: boolean;
+}

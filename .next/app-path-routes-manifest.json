@@ -2,6 +2,7 @@
   "/(admin)/home/page": "/home",
   "/(admin)/master-admin/desain-perusahaan/page": "/master-admin/desain-perusahaan",
   "/(admin)/master-admin/page": "/master-admin",
+  "/(admin)/tenant/page": "/tenant",
   "/(user)/employee-self-service/page": "/employee-self-service",
   "/(user)/employee-self-service/personal-information/page": "/employee-self-service/personal-information",
   "/(user)/employee-self-service/time-and-attendance/cuti-ijin/page": "/employee-self-service/time-and-attendance/cuti-ijin",

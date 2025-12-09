@@ -615,7 +615,7 @@ export default function FormOrganization({ onNextStep, onBack }: FormOrganizatio
                       <td className="px-4 py-2 align-top pt-3">
                         {r.dokumen_url ? (
                           <a href={r.dokumen_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                            {r.dokumenname || "Unduh"}
+                            {r.dokumenname || "-"}
                           </a>
                         ) : (
                           "-"

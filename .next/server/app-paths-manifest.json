@@ -1,7 +1,15 @@
 {
   "/(admin)/home/page": "app/(admin)/home/page.js",
   "/(admin)/master-admin/desain-perusahaan/page": "app/(admin)/master-admin/desain-perusahaan/page.js",
+  "/(admin)/master-admin/page": "app/(admin)/master-admin/page.js",
   "/(admin)/tenant/page": "app/(admin)/tenant/page.js",
+  "/(user)/employee-self-service/page": "app/(user)/employee-self-service/page.js",
+  "/(user)/employee-self-service/personal-information/page": "app/(user)/employee-self-service/personal-information/page.js",
+  "/(user)/employee-self-service/time-and-attendance/cuti-ijin/page": "app/(user)/employee-self-service/time-and-attendance/cuti-ijin/page.js",
+  "/(user)/employee-self-service/time-and-attendance/data-kehadiran/page": "app/(user)/employee-self-service/time-and-attendance/data-kehadiran/page.js",
+  "/(user)/employee-self-service/time-and-attendance/page": "app/(user)/employee-self-service/time-and-attendance/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/sign-up/page": "app/sign-up/page.js"
 }
